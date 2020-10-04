@@ -1,15 +1,22 @@
 <template>
-  <div>
+  <div id="wrap">
     <!-- 顶部跳转 -->
     <van-nav-bar
-      left-text="返回"
-      right-text="分享"
+      id="nvbar"
+      left-text=""
+      :title="items"
       left-arrow
       @click-left="onClickLeft"
       @click-right="onClickRight"
       :fixed="true"
-      class="nvbar"
-    />
+      :class="boo ? navf : navt"
+      ><template #left>
+        <van-icon name="arrow-left" size="18" />
+      </template>
+      <template #right>
+        <van-icon name="share-o" size="18" />
+      </template>
+    </van-nav-bar>
     <!-- 商品轮播图 -->
     <van-swipe @change="onChange" class="shop-swipe">
       <van-swipe-item>
@@ -74,17 +81,17 @@
     </van-goods-action>
     <!-- 商品详情图片富文本 -->
     <div class="shop-img-info">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="">
+      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
     </div>
   </div>
 </template>
 <script>
 import { Toast } from "vant";
-
+var navtap = document.querySelector(".nvbar");
 export default {
   data() {
     return {
@@ -101,8 +108,12 @@ export default {
           { name: "二维码", icon: "qrcode" },
         ],
       ],
-
+      i: 0,
       current: 0,
+      boo: false,
+      navf: "navfff",
+      navt: "navtran",
+      items: "",
     };
   },
   methods: {
@@ -120,6 +131,25 @@ export default {
     onClickIcon() {
       Toast("点击图标");
     },
+    handleScroll() {
+      // 页面滚动距顶部距离
+      var scrollTop =
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        document.body.scrollTop;
+      var scroll = scrollTop - this.i;
+      this.i = scrollTop;
+      if (scrollTop < 46) {
+        this.boo = false;
+        this.items=""
+      } else {
+        this.boo = true;
+        this.items="富士苹果"
+      }
+    },
+  },
+  mounted() {
+    window.addEventListener("scroll", this.handleScroll, true);
   },
 };
 </script>
@@ -137,9 +167,34 @@ export default {
     height: 300px;
   }
 }
-.nvbar {
-  background: transparent;
-  border: none !important;
+#wrap {
+  background: #f6f6f6;
+  #nvbar {
+    &::after {
+      position: absolute;
+      box-sizing: border-box;
+      content: " ";
+      pointer-events: none;
+      top: -50%;
+      right: -50%;
+      bottom: -50%;
+      left: -50%;
+      border: none;
+      -webkit-transform: scale(0.5);
+      transform: scale(0.5);
+    }
+    i{
+      color: #333;
+    }
+  }
+  .navfff {
+    background: #fff;
+    color: #000;
+  }
+  .navtran {
+    background: transparent;
+    color: transparent;
+  }
 }
 .shop-info {
   width: 100%;
@@ -148,6 +203,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: #fff;
   .shop-info-left {
     p {
       &:nth-of-type(1) {
@@ -181,9 +237,13 @@ export default {
 }
 .shop-info-time {
   width: 100%;
-  padding: 0 15px 15px 15px;
+  margin: 10px 0 10px 0;
+  padding: 10px;
   box-sizing: border-box;
   border-bottom: 1px solid #dedede;
+  display: flex;
+  align-items: center;
+  background: #fff;
   span {
     font-size: 10px;
     color: #667;
@@ -196,6 +256,8 @@ export default {
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  background: #fff;
+  margin-bottom: 10px;
   .shop-info-name-img {
     width: 40px;
     height: 40px;
@@ -221,10 +283,10 @@ export default {
     }
   }
 }
-.shop-img-info{
+.shop-img-info {
+  width: 100%;
+  img {
     width: 100%;
-    img{
-        width: 100%;
-    }
+  }
 }
 </style>

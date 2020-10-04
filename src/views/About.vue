@@ -18,8 +18,13 @@
     <!-- 商品分类列表 -->
     <div class="shop-swiper">
       <div class="shop-wrap">
-        <div class="shop-items" v-for="(item, index) in top_list" :key="index">
-          <div class="shop-swiper-img">
+        <div
+          class="shop-items"
+          v-for="(item, index) in top_list"
+          :key="index"
+          @click="fentop(index)"
+        >
+          <div class="shop-swiper-img" :class="yang == index ? 'toptab' : ''">
             <img :src="item.url" />
           </div>
           <p>{{ item.text }}</p>
@@ -31,7 +36,7 @@
       height="100%"
       :items="top_list"
       :main-active-index.sync="active"
-      @click-nav="inde(17733933505)"
+      @click-nav="inde"
     >
       <template #content class="tree-select-con-wrap" height="422">
         <div class="tree-shop-wrap">
@@ -115,6 +120,7 @@ export default {
       active: 0,
       sum: 74,
       value: "",
+      yang: 0,
       top_list: [
         {
           text: "全部",
@@ -156,13 +162,18 @@ export default {
     };
   },
   methods: {
-    inde(el) {
-      console.log(el);
+    inde(index) {
+      this.yang=index;
+      this.active=index;
     },
     shop() {
       this.$router.push({
         name: "Shop",
       });
+    },
+    fentop(e) {
+      this.yang=e;
+      this.active=e;
     },
   },
 };
@@ -223,17 +234,18 @@ export default {
       width: 45px;
       height: 70px;
       margin: 0 5px 0 5px;
+      .toptab {
+        border-color: #00ae46 !important;
+      }
       .shop-swiper-img {
         width: 45px;
         height: 45px;
         border-radius: 50%;
-        border: 1px solid transparent;
+        border: 1px solid #fff;
         overflow: hidden;
         text-align: center;
         padding: 1px;
-        &:nth-of-type(1) {
-          border: 1px solid #00ae46;
-        }
+
         img {
           width: 45px;
           height: 45px;
