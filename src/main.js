@@ -18,7 +18,31 @@ import { NavBar } from 'vant';
 import { ShareSheet } from 'vant';
 
 import { GoodsAction, GoodsActionIcon, GoodsActionButton } from 'vant';
+import { SubmitBar } from 'vant';
 
+import { Checkbox, CheckboxGroup } from 'vant';
+import { Dialog } from 'vant';
+
+
+import { AddressList } from 'vant';
+
+import { Field } from 'vant';
+
+import { AddressEdit } from 'vant';
+
+import { Area } from 'vant';
+
+import { Popup } from 'vant';
+
+Vue.use(Popup);
+Vue.use(Area);
+Vue.use(AddressEdit);
+Vue.use(Field);
+Vue.use(AddressList);
+Vue.use(Dialog);
+Vue.use(Checkbox);
+Vue.use(CheckboxGroup);
+Vue.use(SubmitBar);
 Vue.use(GoodsAction);
 Vue.use(GoodsActionButton);
 Vue.use(GoodsActionIcon);

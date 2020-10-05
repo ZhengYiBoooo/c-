@@ -274,6 +274,7 @@ export default {
   left: 0;
   top: 0;
   width: 100%;
+  padding-top: 50px;
 }
 .tree-select-tit {
   width: 100%;
@@ -283,6 +284,10 @@ export default {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #dedede;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1111111;
   p {
     width: 42px;
     height: 21px;
