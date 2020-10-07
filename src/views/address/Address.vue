@@ -8,7 +8,9 @@
       </template>
     </van-nav-bar>
 
-    <van-popup v-model="show" round position="bottom"  :style="{ height: '40%' }" >内容</van-popup>
+    <van-popup v-model="show" round position="bottom" :style="{ height: '40%' }"
+      >内容</van-popup
+    >
     <!-- 提交订单 -->
     <div class="Totalprice">
       <p>
@@ -16,7 +18,12 @@
       </p>
       <p><span>配送费</span><span>￥3</span></p>
       <div class="Totalprice-sum">
-        <van-button round type="info" color="#ff0000" class="btn" @click="showPopup"
+        <van-button
+          round
+          type="info"
+          color="#ff0000"
+          class="btn"
+          @click="showPopup"
           >提交订单</van-button
         >
         <span
@@ -102,7 +109,7 @@ export default {
       value: "",
       newlist: [],
       num: 0,
-      show:false,
+      show: false,
       bgm: false,
       areaList: {
         province_list: {
@@ -157,9 +164,9 @@ export default {
         this.searchResult = [];
       }
     },
-    showPopup(){
+    showPopup() {
       this.show = true;
-    }
+    },
   },
   computed: {
     numsum() {
@@ -318,7 +325,7 @@ export default {
             .shopitems-speci {
               position: absolute;
               right: 10px;
-              bottom: 10px;
+              top: 5px;
               display: flex;
               justify-content: center;
               align-items: center;

@@ -31,7 +31,7 @@ const routes = [
       },
     ]
   },
-  
+
   {
     path: '/shop',
     name: 'Shop',
@@ -42,10 +42,50 @@ const routes = [
     name: 'Address',
     component: () => import(/* webpackChunkName: "shop" */ '../views/address/Address.vue')
   },
+  {
+    path: '/myhome',
+    name: 'Myhome',
+    component: () => import(/* webpackChunkName: "myhome" */ '../views/myhome/Myhome.vue'),
+  },
+
+  {
+    path: '/myGender',
+    name: 'MyGender',
+    component: () => import(/* webpackChunkName: "myGender" */ '../views/myhome/MyGender.vue')
+  },
+
+  {
+    path: '/myphone',
+    name: 'Myphone',
+    component: () => import(/* webpackChunkName: "myphone" */ '../views/myhome/Myphone.vue')
+  },
+
+  {
+    path: '/mycode',
+    name: 'MyCode',
+    component: () => import(/* webpackChunkName: "MyCode" */ '../views/myhome/MyCode.vue')
+  },
+
+  {
+    path: '/oderall',
+    name: 'Oderall',
+    component: () => import(/* webpackChunkName: "Oderall" */ '../views/oder/Oderall.vue')
+  },
+  {
+    path: '/waitpay',
+    name: 'Waitpay',
+    component: () => import(/* webpackChunkName: "Waitpay" */ '../views/oder/Waitpay.vue')
+  },
+
+  {
+    path: '/receive',
+    name: 'Receive',
+    component: () => import(/* webpackChunkName: "Receive" */ '../views/other/Receive.vue')
+  },
 ]
 
 const router = new VueRouter({
-  mdoe:'history',
+  mdoe: 'history',
   base: process.env.BASE_URL,
   routes
 })

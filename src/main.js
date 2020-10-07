@@ -34,6 +34,26 @@ import { Area } from 'vant';
 
 import { Popup } from 'vant';
 
+import { Form } from 'vant';
+
+import { DropdownMenu, DropdownItem } from 'vant';
+import { Notify } from 'vant';
+
+import { NumberKeyboard } from 'vant';
+
+import { CountDown } from 'vant';
+
+import { Tab, Tabs } from 'vant';
+
+Vue.use(Tab);
+Vue.use(Tabs);
+Vue.use(CountDown);
+Vue.use(NumberKeyboard);
+// 全局注册
+Vue.use(Notify);
+Vue.use(DropdownMenu);
+Vue.use(DropdownItem);
+Vue.use(Form);
 Vue.use(Popup);
 Vue.use(Area);
 Vue.use(AddressEdit);
