@@ -33,7 +33,7 @@
           </div>
           <p>待收货</p>
         </div>
-        <div class="my-grid-box-items">
+        <div class="my-grid-box-items" @click="refund">
           <div class="my-grid-box-icon">
             <van-icon name="qr" />
           </div>
@@ -44,8 +44,8 @@
     <!-- 收货详情 -->
     <div class="grid-list">
       <div class="grid-list-li" @click="receiving"><span>收货地址</span><van-icon name="arrow" /></div>
-      <div class="grid-list-li"><span>联系客服</span><van-icon name="arrow" /></div>
-      <div class="grid-list-li"><span>意见反馈</span><van-icon name="arrow" /></div>
+      <div class="grid-list-li" @click="contact"><span>联系客服</span><van-icon name="arrow" /></div>
+      <div class="grid-list-li" @click="opinion"><span>意见反馈</span><van-icon name="arrow" /></div>
     </div>
   </div>
 </template>
@@ -73,6 +73,21 @@ export default {
     receiving(){
       this.$router.push({
         name:'Receive',
+      })
+    },
+    contact(){
+      this.$router.push({
+        name:'Contact',
+      })
+    },
+    opinion(){
+      this.$router.push({
+        name:'Opinion',
+      })
+    },
+    refund(){
+      this.$router.push({
+        name:'Refund',
       })
     }
   }

@@ -45,6 +45,13 @@ import { CountDown } from 'vant';
 
 import { Tab, Tabs } from 'vant';
 
+import { Tag } from 'vant';
+
+import { Uploader } from 'vant';
+import axios from 'axios';
+Vue.prototype.axios=axios;
+Vue.use(Uploader);
+Vue.use(Tag);
 Vue.use(Tab);
 Vue.use(Tabs);
 Vue.use(CountDown);

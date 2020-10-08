@@ -78,9 +78,45 @@ const routes = [
   },
 
   {
+    path: '/refund',
+    name: 'Refund',
+    component: () => import(/* webpackChunkName: "Refund" */ '../views/oder/Refund.vue')
+  },
+  {
     path: '/receive',
     name: 'Receive',
     component: () => import(/* webpackChunkName: "Receive" */ '../views/other/Receive.vue')
+  },
+
+  {
+    path: '/editress',
+    name: 'Editress',
+    component: () => import(/* webpackChunkName: "Editress" */ '../views/other/Editress.vue')
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: () => import(/* webpackChunkName: "Contact" */ '../views/other/Contact.vue')
+  },
+  {
+    path: '/opinion',
+    name: 'Opinion',
+    component: () => import(/* webpackChunkName: "Opinion" */ '../views/other/Opinion.vue')
+  },
+  {
+    path: '/details',
+    name: 'Details',
+    component: () => import(/* webpackChunkName: "Details" */ '../views/oder/Details.vue')
+  },
+  {
+    path: '/platform',
+    name: 'Platform',
+    component: () => import(/* webpackChunkName: "Platform" */ '../views/oder/Platform.vue')
+  },
+  {
+    path: '/logistics',
+    name: 'Logistics',
+    component: () => import(/* webpackChunkName: "Logistics" */ '../views/oder/Logistics.vue')
   },
 ]
 

@@ -1,12 +1,9 @@
 <template>
   <div class="myhome">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop"
-      ><template #left> <van-icon name="arrow-left" size="18" /> </template
-      ><template #right>
-        <span>个人资料</span>
-      </template>
-    </van-nav-bar>
+    
+      <opInion :urls="'Mystyle'" :titleleft="''" :titleright="'个人资料'"></opInion>
+
     <!-- 用户信息 -->
     <div class="my-home-wrap">
       <div class="my-home-items">
@@ -44,7 +41,11 @@
   </div>
 </template>
 <script>
+import opInion from '../../components/navbar/navbar.vue' 
 export default {
+    components:{
+        opInion
+    },
   data() {
     return {
       gener: "请选择",
@@ -77,33 +78,6 @@ export default {
   width: 100%;
   background: #fff;
   padding-top: 46px;
-  #addTop {
-    background: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 19;
-    width: 100%;
-    &::after {
-      position: absolute;
-      box-sizing: border-box;
-      content: " ";
-      pointer-events: none;
-      top: -50%;
-      right: -50%;
-      bottom: -50%;
-      left: -50%;
-      border: none;
-      -webkit-transform: scale(0.5);
-      transform: scale(0.5);
-    }
-    i {
-      color: #333;
-    }
-    span {
-      font-size: 16px;
-    }
-  }
   .my-home-wrap {
     width: 100%;
     background: #fff;
@@ -140,8 +114,6 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      &:nth-of-type(1) {
-      }
       span {
         font-size: 15px;
         font-weight: bold;

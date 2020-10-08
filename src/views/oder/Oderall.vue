@@ -1,11 +1,13 @@
 <template>
   <div class="oder">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop"
-      ><template #left>
-        <van-icon name="arrow-left" size="18" /> <span>我的订单</span></template
-      >
-    </van-nav-bar>
+
+    <opInion
+      :urls="'Mystyle'"
+      :titleleft="'我的订单'"
+      :titleright="''"
+    ></opInion>
+
     <van-tabs v-model="active">
       <van-tab title="全部">
         <div class="wrap">
@@ -14,7 +16,7 @@
               <p><span>2020-09-29</span><span>09:58:11</span></p>
               <p><span>待支付</span></p>
             </div>
-            <div class="shopitems-right"  @click="waitpay">
+            <div class="shopitems-right" @click="waitpay">
               <van-image round :src="item.url" class="shopitems-img" />
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
@@ -79,7 +81,7 @@
               <p><span>2020-09-29</span><span>09:58:11</span></p>
               <p><span>买家已付款</span></p>
             </div>
-            <div class="shopitems-right"  @click="waitpay">
+            <div class="shopitems-right" @click="waitpay">
               <van-image round :src="item.url" class="shopitems-img" />
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
@@ -113,7 +115,7 @@
               <p><span>2020-09-29</span><span>09:58:11</span></p>
               <p><span>卖家已发货</span></p>
             </div>
-            <div class="shopitems-right"  @click="waitpay">
+            <div class="shopitems-right" @click="waitpay">
               <van-image round :src="item.url" class="shopitems-img" />
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
@@ -144,8 +146,12 @@
   </div>
 </template>
 <script>
-import { Dialog } from 'vant';
+import { Dialog } from "vant";
+import opInion from "../../components/navbar/navbar.vue";
 export default {
+  components: {
+    opInion,
+  },
   data() {
     return {
       active: 0,
@@ -222,11 +228,11 @@ export default {
           // on cancel
         });
     },
-    waitpay(){
+    waitpay() {
       this.$router.push({
-        name:'Waitpay'
-      })
-    }
+        name: "Waitpay",
+      });
+    },
   },
 };
 </script>
@@ -236,33 +242,6 @@ export default {
   overflow: hidden;
   padding-top: 46px;
   box-sizing: border-box;
-}
-#addTop {
-  background: #fff;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 19;
-  width: 100%;
-  &::after {
-    position: absolute;
-    box-sizing: border-box;
-    content: " ";
-    pointer-events: none;
-    top: -50%;
-    right: -50%;
-    bottom: -50%;
-    left: -50%;
-    border: none;
-    -webkit-transform: scale(0.5);
-    transform: scale(0.5);
-  }
-  i {
-    color: #333;
-  }
-  span {
-    font-size: 16px;
-  }
 }
 .wrap {
   width: 100%;

@@ -35,7 +35,7 @@
       <!-- 订单中心 -->
       <div class="add-body">
         <!-- 订单地址选项 -->
-        <div class="add-list-edit-ol" v-if="bgm == true">
+        <div class="add-list-edit-ol" v-if="bgm == false">
           <van-address-edit
             class="add-list-edit-ol-add"
             :area-list="areaList"
@@ -66,7 +66,7 @@
               <p>浙江省杭州市萧山区金鸡路知稼苑停车场 入口21幢906</p>
             </div>
 
-            <van-icon name="arrow" class="add-right-bottom-icon" />
+            <van-icon name="arrow" class="add-right-bottom-icon" @click="receive" />
           </div>
         </div>
         <!-- 订单商品列表 -->
@@ -167,6 +167,11 @@ export default {
     showPopup() {
       this.show = true;
     },
+    receive(){
+      this.$router.push({
+        name:'Receive'
+      })
+    }
   },
   computed: {
     numsum() {

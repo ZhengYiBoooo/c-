@@ -1,10 +1,11 @@
 <template>
   <div class="waitpay">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop"
-      ><template #left> <van-icon name="arrow-left" size="18" /></template
-      ><template #right> <span>订单详情</span></template>
-    </van-nav-bar>
+    <opInion
+      :urls="'Oderall'"
+      :titleleft="''"
+      :titleright="'订单详情'"
+    ></opInion>
 
     <div class="waitpa-wrap">
       <div class="wait-wrap">
@@ -20,6 +21,19 @@
           <span class="shopimore">更多</span>
         </div>
       </div>
+
+      <div class="wait-deliver">
+        <div class="wait-deliver-img">
+          <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" class="logo" />
+        </div>
+        <div class="wait-deliver-content">
+          <p>包裹正在等待揽收</p>
+          <p>2020-08-25 10:03:59</p>
+        </div>
+        <div class="wait-deliver-icon" @click="logistics">
+          <van-icon name="arrow" color="#999" />
+        </div>
+      </div>
       <div class="address">
         <div class="address-icon">
           <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" class="logo" />
@@ -29,7 +43,6 @@
           ></span>王小明<span></span>13637140505
         </div>
       </div>
-
       <div class="shopitems" v-for="(item, index) in list" :key="index">
         <div class="shopitems-right">
           <van-image round :src="item.url" class="shopitems-img" />
@@ -86,7 +99,11 @@
 </template>
 <script>
 import { Dialog } from "vant";
+import opInion from "../../components/navbar/navbar.vue";
 export default {
+  components: {
+    opInion,
+  },
   data() {
     return {
       list: [
@@ -157,6 +174,11 @@ export default {
           // on cancel
         });
     },
+    logistics(){
+      this.$router.push({
+        name: "Logistics",
+      });
+    }
   },
 };
 </script>
@@ -166,33 +188,6 @@ export default {
   overflow: hidden;
   padding-top: 46px;
   box-sizing: border-box;
-  #addTop {
-    background: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 19;
-    width: 100%;
-    &::after {
-      position: absolute;
-      box-sizing: border-box;
-      content: " ";
-      pointer-events: none;
-      top: -50%;
-      right: -50%;
-      bottom: -50%;
-      left: -50%;
-      border: none;
-      -webkit-transform: scale(0.5);
-      transform: scale(0.5);
-    }
-    i {
-      color: #333;
-    }
-    span {
-      font-size: 16px;
-    }
-  }
   .waitpa-wrap {
     background: #fff;
     padding: 30px;
@@ -254,6 +249,51 @@ export default {
         .shopitems-wait-shipment2 {
           font-size: 15px;
         }
+      }
+    }
+    .wait-deliver {
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 20px 0 20px 0;
+      box-sizing: border-box;
+      .wait-deliver-img {
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 25px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .wait-deliver-content {
+        overflow: hidden;
+        display: flex;
+        width: 200px;
+        flex-wrap: wrap;
+        margin-right: 25px;
+        p {
+          width: 100%;
+          font-size: 15px;
+          &:nth-of-type(1){
+            color: #3696E1;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+          }
+          &:nth-of-type(2){
+            color: #999;
+            margin-bottom: 10px;
+          }
+        }
+      }
+      .wait-deliver-icon{
+        display: flex;
+        align-items: center;
       }
     }
     .address {
@@ -409,6 +449,7 @@ export default {
         overflow: hidden;
         display: flex;
         .shopitems-info-content {
+          width: 100%;
           li {
             font-size: 15px;
             letter-spacing: 1px;

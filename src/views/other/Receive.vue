@@ -1,24 +1,75 @@
 <template>
   <div class="receive">
     <!-- 导航栏 -->
+    
     <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop">
       <template #left>
         <van-icon name="arrow-left" size="18" /><span>我的收货地址</span>
       </template>
-      <template #right> <span class="sp-right">添加新地址</span> </template>
+      <template #right>
+        <span class="sp-right" @click="Editressnew">添加新地址</span>
+      </template>
     </van-nav-bar>
 
     <div class="receive-wrap">
       <div class="receive-items">
         <div class="receive-items-left">
           <div class="receive-items-left-title">
-            <span>王小明</span>
-            <span>136 3714 0505</span>
-            <span>家 默认</span>
+            <div class="receive-items-left-title-info">
+              <span>王小明</span>
+              <span>136 3714 0505</span>
+            </div>
+            <span class="receive-items-tag"
+              ><van-tag color="#00CC66">家</van-tag
+              ><van-tag color="#FFCC33">默认</van-tag></span
+            >
+          </div>
+          <div class="receive-items-left-bottom">
+            <p>浙江省杭州市萧山区金鸡路知稼苑停车场入口21幢906</p>
           </div>
         </div>
         <div class="receive-items-right">
-          <van-icon name="newspaper-o" />
+          <van-icon name="newspaper-o" @click="editress" />
+        </div>
+      </div>
+      <div class="receive-items">
+        <div class="receive-items-left">
+          <div class="receive-items-left-title">
+            <div class="receive-items-left-title-info">
+              <span>王小明</span>
+              <span>136 3714 0505</span>
+            </div>
+            <span class="receive-items-tag"
+              ><van-tag color="#00CC66">家</van-tag
+              ><van-tag color="#FFCC33">默认</van-tag></span
+            >
+          </div>
+          <div class="receive-items-left-bottom">
+            <p>浙江省杭州市萧山区金鸡路知稼苑停车场入口21幢906</p>
+          </div>
+        </div>
+        <div class="receive-items-right">
+          <van-icon name="newspaper-o" @click="editress" />
+        </div>
+      </div>
+      <div class="receive-items">
+        <div class="receive-items-left">
+          <div class="receive-items-left-title">
+            <div class="receive-items-left-title-info">
+              <span>王小明</span>
+              <span>136 3714 0505</span>
+            </div>
+            <span class="receive-items-tag"
+              ><van-tag color="#00CC66">家</van-tag
+              ><van-tag color="#FFCC33">默认</van-tag></span
+            >
+          </div>
+          <div class="receive-items-left-bottom">
+            <p>浙江省杭州市萧山区金鸡路知稼苑停车场入口21幢906</p>
+          </div>
+        </div>
+        <div class="receive-items-right">
+          <van-icon name="newspaper-o" @click="editress" />
         </div>
       </div>
     </div>
@@ -30,6 +81,19 @@ export default {
     onClickLeft() {
       this.$router.push({
         name: "Mystyle",
+      });
+    },
+    editress() {
+      this.$router.push({
+        name: "Editress",
+      });
+    },
+    Editressnew() {
+      this.$router.push({
+        name: "Editress",
+        query: {
+          num: "10",
+        },
       });
     },
   },
@@ -89,14 +153,40 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      padding: 10px;
+      padding-bottom: 20px;
+      box-sizing: border-box;
+      box-shadow: 5px 5px 5px #eeee, -1px -1px 1px #eeee;
+      margin-bottom: 20px;
       .receive-items-left {
+        margin-right: 35px;
         .receive-items-left-title {
           width: 100%;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          .receive-items-left-title-info {
+            display: flex;
+            justify-content: space-between;
+            span {
+              &:nth-of-type(1) {
+                margin-right: 30px;
+              }
+            }
+          }
+          .receive-items-tag {
+            .van-tag {
+              margin: 0 4px 0 4px;
+            }
+          }
           span {
             font-size: 13px;
+          }
+        }
+        .receive-items-left-bottom {
+          margin-top: 10px;
+          p {
+            font-size: 15px;
           }
         }
       }

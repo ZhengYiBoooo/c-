@@ -1,9 +1,9 @@
 <template>
   <div class="myphone">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop">
-      <template #left> <van-icon name="arrow-left" size="18" /> </template>
-    </van-nav-bar>
+    
+      <opInion :urls="'Myhome'" :titleleft="''" :titleright="''"></opInion>
+    
 
     <!-- 手机验证码 -->
     <div class="my-phone-wrap">
@@ -37,7 +37,11 @@
 <script>
 import { Toast } from "vant";
 import { Notify } from "vant";
+import opInion from '../../components/navbar/navbar.vue' 
 export default {
+    components:{
+        opInion
+    },
   data() {
     return {
       phone: "",
@@ -87,33 +91,6 @@ export default {
   background: #fff;
   box-sizing: border-box;
   padding-top: 46px;
-  #addTop {
-    background: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 19;
-    width: 100%;
-    &::after {
-      position: absolute;
-      box-sizing: border-box;
-      content: " ";
-      pointer-events: none;
-      top: -50%;
-      right: -50%;
-      bottom: -50%;
-      left: -50%;
-      border: none;
-      -webkit-transform: scale(0.5);
-      transform: scale(0.5);
-    }
-    i {
-      color: #333;
-    }
-    span {
-      font-size: 16px;
-    }
-  }
   .my-phone-wrap {
     width: 100%;
     padding: 30px;
