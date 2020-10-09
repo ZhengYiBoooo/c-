@@ -2,7 +2,7 @@
   <div class="mysty">
     <!-- 商家信息 -->
     <div class="top-title" @click="myhome">
-      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" class="logo" />
+      <img :src="userimg" alt="" class="logo" />
       <div class="top-title-con">
         <p>优小果</p>
         <p>手机：17733933505</p>
@@ -51,6 +51,14 @@
 </template>
 <script>
 export default {
+  data(){
+    return {
+      userimg:this.$store.state.avatar
+    }
+  },
+  created(){
+    console.log(this.$store.state.avatar);
+  },
   methods:{
     myhome(){
       this.$router.push({

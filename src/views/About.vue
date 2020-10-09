@@ -114,7 +114,7 @@
   </div>
 </template>
 <script>
-import {logintoken} from './https/api'
+import {logintoken,shoplist} from './https/api'
 export default {
   data() {
     return {
@@ -168,7 +168,8 @@ export default {
     };
   },
   created(){
-    this.logintokens();
+    this.logintoken();
+    this.shoplist();
   },
   methods: {
     inde(index) {
@@ -184,8 +185,12 @@ export default {
       this.yang=e;
       this.active=e;
     },
-    async logintokens(){
+    async logintoken(){
       const res=await logintoken(this.userlist);
+      console.log(res);
+    },
+    async shoplist(){
+      const res=await shoplist();
       console.log(res);
     }
   },

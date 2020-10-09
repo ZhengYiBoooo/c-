@@ -26,6 +26,22 @@
         <span>854488552471101145</span>
         <span>复制</span>
       </div>
+      <div class="Logistics-shop-time">
+        <van-steps direction="vertical" :active="2">
+          <van-step>
+            <h3>【城市】物流状态1</h3>
+            <p>2016-07-12 12:40</p>
+          </van-step>
+          <van-step>
+            <h3>【城市】物流状态2</h3>
+            <p>2016-07-11 10:00</p>
+          </van-step>
+          <van-step>
+            <h2>快件已发货</h2>
+            <p>2016-07-10 09:30</p>
+          </van-step>
+        </van-steps>
+      </div>
     </div>
   </div>
 </template>
@@ -122,6 +138,15 @@ export default {
           color: #0066ff;
         }
       }
+    }
+    .Logistics-shop-time {
+      width: 100%;
+      overflow: hidden;
+      background: #fff;
+      padding: 10px;
+      box-sizing: border-box;
+      margin-top: 20px;
+      padding-left: 45px;
     }
   }
 }

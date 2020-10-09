@@ -21,7 +21,7 @@
         <van-button
           round
           type="info"
-          color="#ff0000"
+          color="#01B44A"
           class="btn"
           @click="showPopup"
           >提交订单</van-button

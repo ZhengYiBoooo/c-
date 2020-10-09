@@ -39,6 +39,7 @@
       :suffix-label="freight"
       :disabled="boo"
       @submit="pushaddress"
+      button-color="#01B44A"
     >
       <van-checkbox v-model="checked" @click="checkall">全选</van-checkbox>
     </van-submit-bar>

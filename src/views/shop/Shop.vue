@@ -72,12 +72,8 @@
     <van-goods-action>
       <van-goods-action-icon icon="chat-o" text="客服" @click="onClickIcon" />
       <van-goods-action-icon icon="cart-o" text="购物车" @click="onClickIcon" />
-      <van-goods-action-button
-        color="#be99ff"
-        type="warning"
-        text="加入购物车"
-      />
-      <van-goods-action-button color="#7232dd" type="danger" text="立即购买" />
+
+      <van-goods-action-button color="#01B44A" type="danger" text="立即购买" />
     </van-goods-action>
     <!-- 商品详情图片富文本 -->
     <div class="shop-img-info">
