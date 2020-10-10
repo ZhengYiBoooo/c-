@@ -114,7 +114,7 @@
   </div>
 </template>
 <script>
-import {logintoken,shoplist} from './https/api'
+import { logintoken, shoplist } from "./https/api";
 export default {
   data() {
     return {
@@ -160,21 +160,21 @@ export default {
           url: "https://img.yzcdn.cn/vant/cat.jpeg",
         },
       ],
-      userlist:{
-        password:'21232f297a57a5a743894a0e4a801fc3',
-        tenantId:'000000',
-        username:'admin'
-      }
+      userlist: {
+        password: "21232f297a57a5a743894a0e4a801fc3",
+        tenantId: "000000",
+        username: "admin",
+      },
     };
   },
-  created(){
+  created() {
     this.logintoken();
     this.shoplist();
   },
   methods: {
     inde(index) {
-      this.yang=index;
-      this.active=index;
+      this.yang = index;
+      this.active = index;
     },
     shop() {
       this.$router.push({
@@ -182,17 +182,17 @@ export default {
       });
     },
     fentop(e) {
-      this.yang=e;
-      this.active=e;
+      this.yang = e;
+      this.active = e;
     },
-    async logintoken(){
-      const res=await logintoken(this.userlist);
+    async logintoken() {
+      const res = await logintoken(this.userlist);
       console.log(res);
     },
-    async shoplist(){
-      const res=await shoplist();
+    async shoplist() {
+      const res = await shoplist();
       console.log(res);
-    }
+    },
   },
 };
 </script>

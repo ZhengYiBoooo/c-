@@ -45,11 +45,19 @@ export default {
         username: "",
         password: "",
       },
-      access_token:''
+      access_token: "",
+      listmore: {},
     };
   },
-  created() {
-      localStorage.clear();
+  async created() {
+    this.listmore = this.$route.query;
+    const res = await logintoken(this.listmore);
+    console.log(this.listmore);
+    if(res.role_name=='cuser'){
+      this.$router.push({
+        name: "Home",
+      });
+    }
   },
   methods: {
     onFailed(errorInfo) {
@@ -58,15 +66,15 @@ export default {
       console.log(this.loginlist);
     },
     async onsubmit(el) {
-      this.loginlist.password = md5(this.loginlist.password);
-      const res = await logintoken(this.loginlist);
-      this.access_token=res.access_token;
-      localStorage.setItem('avatar',res.avatar);
-      localStorage.setItem('access_token',this.access_token);
-      Notify({ type: "primary", message: "登录成功", duration: 1000 });
-      this.$router.push({
-        name: "Home",
-      });
+      // this.loginlist.password = md5(this.loginlist.password);
+      // const res = await logintoken(this.loginlist);
+      // this.access_token=res.access_token;
+      // localStorage.setItem('avatar',res.avatar);
+      // localStorage.setItem('access_token',this.access_token);
+      // Notify({ type: "primary", message: "登录成功", duration: 1000 });
+      // this.$router.push({
+      //   name: "Home",
+      // });
     },
   },
 };

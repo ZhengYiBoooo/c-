@@ -1,6 +1,6 @@
 
 
-import axios from 'axios'; 
+import axios from 'axios';
 import store from '../../store/index'
 axios.defaults.baseURL = "/api"
 
@@ -20,11 +20,12 @@ axios.interceptors.response.use(function (response) {
 export const http = (url, method = "get", data, params) => {
     return new Promise((resolve, reject) => {
         axios({
+
+            // 'Blade-Auth': 'bearer ' + store.state.access_token,
             url,
             method,
             headers: {
                 Authorization: 'Basic c3dvcmQ6c3dvcmRfc2VjcmV0',
-                'Blade-Auth': 'bearer ' + store.state.access_token,
                 'Tenant-Id': '000000'
             },
             data,

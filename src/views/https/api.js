@@ -5,8 +5,11 @@ import { http } from './http';
 export function logintoken(obj) {
     return http('/blade-auth/oauth/token', 'POST', {
     }, {
-        password: obj.password,
+        grant_type:'servicer',
         tenantId: '000000',
+        phone:obj.phone,
+        servicerId:obj.servicerId,
+        userId:obj.userId,
         username: obj.username
     }).then(res => {
         return res;
