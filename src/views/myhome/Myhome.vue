@@ -1,23 +1,31 @@
 <template>
   <div class="myhome">
     <!-- 导航栏 -->
-    
-      <opInion :urls="'Mystyle'" :titleleft="''" :titleright="'个人资料'"></opInion>
+
+    <opInion
+      :urls="'Mystyle'"
+      :titleleft="''"
+      :titleright="''"
+      :centertitle="'个人信息'"
+    ></opInion>
 
     <!-- 用户信息 -->
     <div class="my-home-wrap">
       <div class="my-home-items">
-        <span>头像</span>
         <div class="my-home-img">
-          <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" class="logo" />
+          <img :src="scrimg" alt="" class="logo" />
         </div>
+        <van-uploader :after-read="afterRead" >
+          <van-button icon="plus" type="primary" style="border:none;background:#fff">修改头像</van-button>
+        </van-uploader>
       </div>
       <div
         class="my-home-children"
-        style="padding-right: 12px; box-sizing: border-box"
       >
         <span>昵称</span>
-        <span>优小果</span>
+        <span @click="mynames">优小果
+          <van-icon name="arrow" />
+        </span>
       </div>
       <div class="my-home-children">
         <span>性别</span>
@@ -41,14 +49,15 @@
   </div>
 </template>
 <script>
-import opInion from '../../components/navbar/navbar.vue' 
+import opInion from "../../components/navbar/navbar.vue";
 export default {
-    components:{
-        opInion
-    },
+  components: {
+    opInion,
+  },
   data() {
     return {
       gener: "请选择",
+      scrimg:'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1602938511015&di=3964a67339022caba9ca7c00528bbde7&imgtype=0&src=http%3A%2F%2Fa0.att.hudong.com%2F70%2F91%2F01300000261284122542917592865.jpg'
     };
   },
   created() {
@@ -70,6 +79,16 @@ export default {
         name: "Myphone",
       });
     },
+    
+    afterRead(file) {
+      this.scrimg=file.file.name;
+      console.log(file);
+    },
+    mynames(){
+      this.$router.push({
+        name: "Mynames",
+      });
+    }
   },
 };
 </script>
@@ -91,10 +110,14 @@ export default {
       padding: 10px 0 20px 0;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
+      flex-direction: column;
       span {
         font-size: 15px;
-        font-weight: bold;
+        color: #00ae47;
+      }
+      i{
+        display: none;
       }
       .my-home-img {
         width: 60px;

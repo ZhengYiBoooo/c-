@@ -4,8 +4,9 @@
 
     <opInion
       :urls="'Mystyle'"
-      :titleleft="'我的订单'"
+      :titleleft="''"
       :titleright="''"
+      :centertitle="'我的订单'"
     ></opInion>
 
     <van-tabs v-model="active">
@@ -21,10 +22,13 @@
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
                 <p>中果 / {{ item.jin }}斤</p>
+                <p>x{{ item.num }}</p>
+                <!-- <p>运费{{ item.jin }}元</p> -->
               </div>
               <div class="shopitems-speci">
                 <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
-                <span>x{{ item.num }}</span>
+                <!-- <p>{{ item.pires }}</p> -->
+                <!-- <p>x{{ item.num }}</p> -->
               </div>
             </div>
             <div class="shopitems-bottom">
@@ -51,10 +55,13 @@
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
                 <p>中果 / {{ item.jin }}斤</p>
+                <p>x{{ item.num }}</p>
+                <!-- <p>运费{{ item.jin }}元</p> -->
               </div>
               <div class="shopitems-speci">
                 <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
-                <span>x{{ item.num }}</span>
+                <!-- <p>{{ item.pires }}</p> -->
+                <!-- <p>x{{ item.num }}</p> -->
               </div>
             </div>
             <div class="shopitems-bottom">
@@ -86,15 +93,30 @@
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
                 <p>中果 / {{ item.jin }}斤</p>
+                <p>x{{ item.num }}</p>
+                <!-- <p>运费{{ item.jin }}元</p> -->
               </div>
               <div class="shopitems-speci">
                 <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
-                <span>x{{ item.num }}</span>
+                <!-- <p>{{ item.pires }}</p> -->
+                <!-- <p>x{{ item.num }}</p> -->
               </div>
             </div>
             <div class="shopitems-bottom">
-              <span class="shopitems-wait-shipment">实付款￥136.9</span>
-              <span class="shopitems-wait-shipment2">总价￥136.9</span>
+              <div class="shopit-pires">
+                <p>
+                  <span>商品金额：</span>
+                  <span><i>￥</i>136.9</span>
+                </p>
+                <p>
+                  <span>配送费：</span>
+                  <span><i>￥</i>3</span>
+                </p>
+                <p>
+                  <span>实付金额：</span>
+                  <span><i>￥</i>139.9</span>
+                </p>
+              </div>
             </div>
             <!-- <div class="shopitems-bottom">
               <van-button plain type="primary" round size="small"
@@ -120,16 +142,31 @@
               <div class="shopitems-cont">
                 <p>{{ item.shop }}</p>
                 <p>中果 / {{ item.jin }}斤</p>
+                <p>x{{ item.num }}</p>
+                <!-- <p>运费{{ item.jin }}元</p> -->
               </div>
               <div class="shopitems-speci">
                 <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
-                <span>x{{ item.num }}</span>
+                <!-- <p>{{ item.pires }}</p> -->
+                <!-- <p>x{{ item.num }}</p> -->
               </div>
             </div>
 
             <div class="shopitems-bottom">
-              <span class="shopitems-wait-shipment">实付款￥136.9</span>
-              <span class="shopitems-wait-shipment2">总价￥136.9</span>
+              <div class="shopit-pires">
+                <p>
+                  <span>商品金额：</span>
+                  <span><i>￥</i>136.9</span>
+                </p>
+                <p>
+                  <span>配送费：</span>
+                  <span><i>￥</i>3</span>
+                </p>
+                <p>
+                  <span>实付金额：</span>
+                  <span><i>￥</i>139.9</span>
+                </p>
+              </div>
             </div>
             <div class="shopitems-bottom">
               <van-button plain type="primary" round size="small"
@@ -242,12 +279,14 @@ export default {
   overflow: hidden;
   padding-top: 46px;
   box-sizing: border-box;
+  background: #f6f6f6;
 }
 .wrap {
   width: 100%;
   overflow: hidden;
-  background: #fff;
-  padding: 20px;
+  background: #f6f6f6;
+  padding-top: 20px;
+  padding-bottom: 20px;
   box-sizing: border-box;
   .shopitems {
     display: flex;
@@ -255,11 +294,10 @@ export default {
     align-items: center;
     overflow: hidden;
     width: 100%;
-    padding: 20px;
+    padding: 15px;
     padding-bottom: 10px;
     box-sizing: border-box;
     background: #fff;
-    border-radius: 10px;
     margin-bottom: 10px;
     flex-wrap: wrap;
     box-shadow: 0.133333rem 0.133333rem 0.133333rem #eeee,
@@ -290,14 +328,13 @@ export default {
         }
       }
     }
+
     .shopitems-right {
       width: 100%;
       display: flex;
       align-items: center;
       box-sizing: border-box;
       position: relative;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
       .shopitems-img {
         width: 70px;
         height: 70px;
@@ -325,7 +362,13 @@ export default {
           &:nth-of-type(2) {
             font-size: 15px;
             font-weight: 100;
-            margin: 10px 0 10px 0;
+            margin: 5px 0 5px 0;
+            color: #8888;
+            font-family: Microsoft YaHei;
+          }
+          &:nth-of-type(3) {
+            font-size: 15px;
+            font-weight: 100;
             color: #8888;
             font-family: Microsoft YaHei;
           }
@@ -333,8 +376,8 @@ export default {
       }
       .shopitems-speci {
         position: absolute;
-        right: -20px;
-        top: 5px;
+        right: 5px;
+        top: 0;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -343,21 +386,17 @@ export default {
           font-size: 15px;
           font-weight: 100;
           font-family: Microsoft YaHei;
-          color: red;
           width: 100%;
           text-align: center;
-        }
-        span {
-          font-size: 20px;
-          font-weight: 100;
-          display: block;
-          font-family: Microsoft YaHei;
-          width: 40px;
-          font-size: 15px;
-          max-width: 40px;
-          text-align: center;
-          margin: 0 10px 0 10px;
-          margin-top: 10px;
+          text-align: right;
+          &:nth-of-type(2) {
+            margin-top: 3px;
+            margin-bottom: 6px;
+            color: #999;
+          }
+          &:nth-of-type(3) {
+            color: #999;
+          }
         }
       }
     }
@@ -372,6 +411,49 @@ export default {
       position: relative;
       box-sizing: border-box;
       // justify-content: space-between;
+      
+    .shopit-pires {
+      width: 100%;
+      padding: 20px;
+      padding-left: 0;
+      padding-right: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+      background: #fff;
+      p {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 10px;
+        &:nth-of-type(1) {
+          border-top: 1px solid #eee;
+        }
+        &:last-child {
+          span {
+            &:last-child {
+              color: red;
+            }
+            i{
+              
+            color: red;
+            }
+          }
+        }
+        span {
+          font-size: 16px;
+          font-weight: 100;
+          &:nth-of-type(1) {
+            color: #5e5e5e;
+          }
+          i {
+            font-style: normal;
+            color: #000;
+            font-size: 12px;
+          }
+        }
+      }
+    }
       button {
         width: 80px;
         max-width: 80px;
@@ -384,6 +466,7 @@ export default {
         left: 0;
         bottom: 5px;
         font-size: 14px;
+        color: #686868;
       }
       .shopitems-wait-shipment {
         font-size: 15px;

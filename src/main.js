@@ -49,9 +49,11 @@ import { Tag } from 'vant';
 
 import { Uploader } from 'vant';
 import { Step, Steps } from 'vant';
+import { Empty } from 'vant';
 
 import axios from 'axios';
 Vue.prototype.axios = axios;
+Vue.use(Empty);
 Vue.use(Step);
 Vue.use(Steps);
 Vue.use(Uploader);

@@ -1,13 +1,17 @@
 <template>
   <div id="shopcar">
     <!-- 顶部标题 -->
+    <van-empty
+      description="暂还没有商品哦~"
+      v-show="shopca.length <= 0 ? true : false"
+    />
     <div class="shopcar-tit">
       <span>购物车</span>
       <span v-show="checkitems" @click="demoremove">删除</span>
     </div>
     <!-- 购物车商品信息 -->
     <div class="shoplist">
-      <div class="shopitems" v-for="(item, index) in list" :key="index">
+      <div class="shopitems" v-for="(item, index) in shopca" :key="index">
         <!-- 选则商品 -->
         <van-checkbox
           v-model="item.boo"
@@ -18,16 +22,21 @@
         ></van-checkbox>
         <!-- 选项右侧信息 -->
         <div class="shopitems-right">
-          <van-image round :src="item.url" class="shopitems-img" />
+          <van-image round :src="item.thumbnail" class="shopitems-img" />
           <div class="shopitems-cont">
-            <p>{{ item.shop }}</p>
+            <p>{{ item.goodsName }}</p>
             <p>中果 / {{ item.jin }}斤</p>
-            <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
+            <p>￥{{ (2 * item.goodsCount).toFixed(2) }}</p>
           </div>
           <div class="shopitems-speci">
-            <span @click="item.num == 1 ? (item.num = 1) : item.num--">-</span>
-            <span>{{ item.num }}</span>
-            <span @click="item.num = item.num + 1">+</span>
+            <span
+              @click="
+                item.goodsCount == 1 ? (item.goodsCount = 1) : item.goodsCount--
+              "
+              >-</span
+            >
+            <span>{{ item.goodsCount }}</span>
+            <span @click="shoplevae">+</span>
           </div>
         </div>
       </div>
@@ -35,7 +44,7 @@
     <!-- 提交购物车 -->
     <van-submit-bar
       :price="totalPrice"
-      button-text="提交订单"
+      button-text="去结算"
       :suffix-label="freight"
       :disabled="boo"
       @submit="pushaddress"
@@ -47,6 +56,7 @@
 </template>
 <script>
 import { Dialog } from "vant";
+import { usercarlist, usercarsave, usergoremove } from "../https/api";
 export default {
   data() {
     return {
@@ -109,7 +119,18 @@ export default {
       demo: "",
       sss: 0,
       numsr: [],
+      shopca: [],
+      shopacrsave: {
+        goodsCount: "1",
+        goodsId: "2",
+      },
+      shopremoves: {
+        ids: "1",
+      },
     };
+  },
+  created() {
+    this.usercarlist();
   },
   methods: {
     say(e) {
@@ -128,23 +149,24 @@ export default {
         this.checkitems = false;
         this.boo = true;
       }
-      if (this.checkedlist.length < this.list.length) {
+      if (this.checkedlist.length < this.shopca.length) {
         this.checked = false;
       } else {
         this.checked = true;
       }
-      
+      console.log(this.shopca);
+      console.log(this.checkedlist);
     },
     checkall() {
       if (!this.checked) {
-        this.list.forEach((item) => {
+        this.shopca.forEach((item) => {
           item.boo = false;
         });
         this.checkedlist = [];
         this.checkitems = false;
         this.boo = true;
       } else {
-        this.list.forEach((item) => {
+        this.shopca.forEach((item) => {
           item.boo = true;
           if (this.checkedlist.indexOf(item.id) < 0) {
             this.checkedlist.push(item.id);
@@ -153,7 +175,6 @@ export default {
         this.checkitems = true;
         this.boo = false;
       }
-      console.log(this.checkedlist);
     },
     remove(arr, val) {
       var index = arr.indexOf(val);
@@ -162,33 +183,53 @@ export default {
       }
     },
     demoremove() {
+      var that = this;
+      this.$options.methods.dsasdasd(that);
       Dialog.confirm({
         message: "确定删除勾选商品吗",
       })
         .then(() => {
-          this.list=this.list.filter(item => item.boo!= true);
-          this.checkedlist=[];
-          console.log(this.checkedlist)
+          that.dsasdasd();
+          this.shopca = this.shopca.filter((item) => item.boo != true);
+          this.checkedlist = [];
         })
         .catch(() => {});
     },
-    pushaddress(){
-      let shoplist=JSON.stringify(this.list.filter(item => item.boo!= false));
+    pushaddress() {
+      let shoplist = this.shopca.filter((item) => item.boo == true);
       this.$router.push({
-        name:'Address',
-        query:{
-          res:shoplist
-        }
-      })
-    }
+        name: "Address",
+      });
+      console.log(shoplist);
+      this.$store.commit("changeshop", JSON.stringify(shoplist));
+    },
+    dsasdasd(that) {
+      this.usergoremove();
+    },
+    async usergoremove() {
+      const res = await usergoremove(this.shopremoves);
+      console.log(res);
+    },
+    async usercarlist() {
+      const res = await usercarlist();
+      this.shopca = res.data;
+    },
+    async usercarsave() {
+      const res = await usercarsave(this.shopacrsave);
+      this.usercarlist();
+      console.log(res);
+    },
+    shoplevae() {
+      this.usercarsave();
+    },
   },
   computed: {
     totalPrice: function () {
       var total = 0;
-      for (var i = 0; i < this.list.length; i++) {
-        if (this.list[i].boo) {
-          var item = this.list[i];
-          total += item.pires * item.num;
+      for (var i = 0; i < this.shopca.length; i++) {
+        if (this.shopca[i].boo == true) {
+          var item = this.shopca[i];
+          total += 2 * item.goodsCount;
         }
       }
       return total * 100;

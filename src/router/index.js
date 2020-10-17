@@ -124,6 +124,16 @@ const routes = [
     name: 'Logistics',
     component: () => import(/* webpackChunkName: "Logistics" */ '../views/oder/Logistics.vue')
   },
+  {
+    path: '/mynews',
+    name: 'Mynews',
+    component: () => import(/* webpackChunkName: "Mynews" */ '../views/myhome/Mynews.vue')
+  },
+  {
+    path: '/mynames',
+    name: 'Mynames',
+    component: () => import(/* webpackChunkName: "Mynames" */ '../views/myhome/Mynames.vue')
+  },
 ]
 
 const router = new VueRouter({

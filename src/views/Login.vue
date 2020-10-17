@@ -52,10 +52,14 @@ export default {
   async created() {
     this.listmore = this.$route.query;
     const res = await logintoken(this.listmore);
-    console.log(this.listmore);
-    if(res.role_name=='cuser'){
+    console.log(res);
+
+    this.$store.commit("show", res.access_token);
+    // localStorage.setItem("access_token", res.access_token);
+    if (res.role_name == "cuser") {
       this.$router.push({
         name: "Home",
+        query: {},
       });
     }
   },

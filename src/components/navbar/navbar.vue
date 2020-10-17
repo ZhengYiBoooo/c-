@@ -1,6 +1,6 @@
 <template>
   <div>
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop">
+    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop" :title="centertitle">
       <template #left>
         <van-icon name="arrow-left" size="18" />
         <span>{{name}}</span>
@@ -18,7 +18,7 @@ export default {
         name:this.titleleft
     };
   },
-  props:['urls','titleleft','titleright'],
+  props:['urls','titleleft','titleright','centertitle'],
   methods: {
     onClickLeft() {
       this.$router.push({

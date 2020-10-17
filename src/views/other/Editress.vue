@@ -1,12 +1,7 @@
 <template>
   <div class="Editress">
     <!-- 导航栏 -->
-    <van-nav-bar
-      left-arrow
-      @click-left="onClickLeft"
-      id="addTop"
-      :title="core"
-    >
+    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop" :title="core">
       <template #left>
         <van-icon name="arrow-left" size="18" />
       </template>
@@ -15,16 +10,16 @@
     <div class="Editress-wrap">
       <van-address-edit
         class="Editress-edit"
-        :area-list="areaList"
+        :area-list="maplist"
         :show-delete="boo"
         show-set-default
+        :address-info="list"
         show-search-result
         tel-maxlength="11"
         :search-result="searchResult"
         :area-columns-placeholder="['请选择', '请选择', '请选择']"
         @save="onSave"
-        @delete="onDelete"
-        @change-detail="onChangeDetail"
+        @delete="userexre(list.id)"
       >
         <template>
           <div class="tagtop">
@@ -33,7 +28,7 @@
               <van-tag
                 :plain="item.boo"
                 :color="item.color"
-                @click="item.boo=!item.boo"
+                @click="labeltouch(item)"
                 v-for="(item, index) in lsittag"
                 :key="index"
                 >{{ item.name }}</van-tag
@@ -46,33 +41,17 @@
   </div>
 </template>
 <script>
+import maps from "../js/map";
+import { Toast } from "vant";
+import {
+  userexpsubmit,
+  userexpress,
+  userexpxiugai,
+  userexremove,
+} from "../https/api";
 export default {
   data() {
     return {
-      areaList: {
-        province_list: {
-          110000: "北京市",
-          120000: "天津市",
-        },
-        city_list: {
-          110100: "北京市",
-          110200: "县",
-          120100: "天津市",
-          120200: "县",
-        },
-        county_list: {
-          110101: "东城区",
-          110102: "西城区",
-          110105: "朝阳区",
-          110106: "丰台区",
-          120101: "和平区",
-          120102: "河东区",
-          120103: "河西区",
-          120104: "南开区",
-          120105: "河北区",
-          // ....
-        },
-      },
       searchResult: [],
       lsittag: [
         {
@@ -91,12 +70,29 @@ export default {
           color: "#666666",
         },
       ],
-      core:this.$route.query.num=='10'?'添加收货地址':'编辑收货地址',
-      boo:this.$route.query.num=='10'?false:true,
+      core: this.$route.query.num == "10" ? "添加收货地址" : "编辑收货地址",
+      boo: this.$route.query.num == "10" ? false : true,
+      maplist: {},
+      userinfo: {},
+      list: {},
+      labelitems:''
     };
   },
-  created(){
-    console.log(this.core)
+  created() {
+    this.userinfo = this.$route.query.ids;
+    console.log(this.userinfo);
+    this.maplist = maps;
+    if (this.$route.query.num == "10") {
+      this.list = {};
+    } else {
+      this.list = {
+        name: this.userinfo.shippingName,
+        tel: this.userinfo.shippingTel,
+        addressDetail: this.userinfo.shippingAddress,
+        areaCode: this.userinfo.shippingCountryId,
+        id: this.userinfo.id,
+      };
+    }
   },
   methods: {
     onClickLeft() {
@@ -104,23 +100,80 @@ export default {
         name: "Receive",
       });
     },
-    onSave() {
-      Toast("save");
-    },
-    onDelete() {
-      Toast("delete");
-    },
-    onChangeDetail(val) {
-      if (val) {
-        this.searchResult = [
-          {
-            name: "黄龙万科中心",
-            address: "杭州市西湖区",
-          },
-        ];
+    onSave(content) {
+      console.log(content);
+      console.log(this.maplist);
+      if (this.$route.query.num == "10") {
+        let userexpsubmitlist = {
+          label: this.labelitems,
+          shippingAddress: content.addressDetail,
+          shippingCityId: content.city,
+          shippingCountryId: content.areaCode,
+          shippingName: content.name,
+          shippingProvinceId: content.province,
+          shippingTel: content.tel,
+        };
+        this.userexpsubmit(userexpsubmitlist);
+        this.userexpress();
+        this.$router.push({
+          name: "Receive",
+        });
       } else {
-        this.searchResult = [];
+        let userexpsubmitxiugai = {
+          label: this.labelitems,
+          shippingAddress: content.addressDetail,
+          shippingCityId: content.city,
+          shippingCountryId: content.areaCode,
+          shippingName: content.name,
+          shippingProvinceId: content.province,
+          shippingTel: content.tel,
+          id: content.id,
+        };
+        this.userexpxiugai(userexpsubmitxiugai);
+        this.userexpress();
+        this.$router.push({
+          name: "Receive",
+        });
       }
+    },
+    async userexpsubmit(e) {
+      const res = await userexpsubmit(e);
+      console.log(res.data);
+    },
+
+    async userexpress() {
+      const res = await userexpress();
+      console.log(res.data);
+    },
+    async userexpxiugai(e) {
+      const res = await userexpxiugai(e);
+      console.log(res);
+    },
+    userexre(e) {
+      this.userexremove(e);
+      this.$router.push({
+        name: "Receive",
+      });
+    },
+    async userexremove(e) {
+      const res = await userexremove(e);
+      console.log(res, "删除地址");
+    },
+
+    labeltouch(e) {
+      if (e.boo == true) {
+        for (var i = 0; i < this.lsittag.length; i++) {
+          this.lsittag[i].boo = true;
+        }
+        e.boo = false;
+      }else{
+        for (var i = 0; i < this.lsittag.length; i++) {
+          this.lsittag[i].boo = true;
+        }
+        e.boo = true;
+      }
+      this.labelitems=e.name;
+      console.log(this.labelitems)
     },
   },
 };

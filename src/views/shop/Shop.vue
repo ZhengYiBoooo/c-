@@ -20,7 +20,7 @@
     <!-- 商品轮播图 -->
     <van-swipe @change="onChange" class="shop-swipe">
       <van-swipe-item>
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+        <img :src="newshoplist.goodsImages" alt="" />
       </van-swipe-item>
       <van-swipe-item>
         <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
@@ -36,15 +36,16 @@
       </template>
     </van-swipe>
     <!-- 商品信息 -->
+    <!-- goodsOldPrice 货物原价  goodsOldTotal 旧货物合计  goodsQuantity 货物数量  goodsShippingFare 货物运费  goodsCategory 货品类别  supplierStock 供应商库存   -->
     <div class="shop-info">
       <div class="shop-info-left">
-        <p>￥29.90</p>
-        <p>红富士苹果</p>
-        <p>中果 5斤</p>
+        <p>￥{{ newshoplist.price }}</p>
+        <p>{{ newshoplist.goodsName }}</p>
+        <p>中果 {{ newshoplist.weight }}斤</p>
       </div>
       <div class="shop-info-right">
-        <p>已售：12</p>
-        <p>运费：3元</p>
+        <p>已售：{{ newshoplist.goodsOldTotal - newshoplist.goodsQuantity }}</p>
+        <p>运费：{{ newshoplist.goodsShippingFare }}元</p>
       </div>
     </div>
     <!-- 送货时长 -->
@@ -77,6 +78,8 @@
     </van-goods-action>
     <!-- 商品详情图片富文本 -->
     <div class="shop-img-info">
+      <iframe src="//player.bilibili.com/player.html?aid=287448006&bvid=BV1vf4y1B7nH&cid=246089163&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+      <video src="https://www.bilibili.com/video/BV1vf4y1B7nH/" controls="controls"></video>
       <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
       <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
       <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
@@ -88,6 +91,7 @@
 <script>
 import { Toast } from "vant";
 var navtap = document.querySelector(".nvbar");
+import { listshopinfo } from "../https/api";
 export default {
   data() {
     return {
@@ -110,7 +114,13 @@ export default {
       navf: "navfff",
       navt: "navtran",
       items: "",
+      infoid: "",
+      newshoplist: {},
     };
+  },
+  created() {
+    this.infoid = this.$route.query.re;
+    this.listshopinfo();
   },
   methods: {
     onClickLeft() {
@@ -137,11 +147,17 @@ export default {
       this.i = scrollTop;
       if (scrollTop < 46) {
         this.boo = false;
-        this.items=""
+        this.items = "";
       } else {
         this.boo = true;
-        this.items="富士苹果"
+        this.items = this.newshoplist.goodsName;
       }
+    },
+
+    async listshopinfo() {
+      const res = await listshopinfo(this.infoid);
+      this.newshoplist = res.data;
+      console.log(this.newshoplist);
     },
   },
   mounted() {
@@ -160,7 +176,7 @@ export default {
 }
 .shop-swipe {
   img {
-    height: 300px;
+    width: 100%;
   }
 }
 #wrap {
@@ -179,7 +195,7 @@ export default {
       -webkit-transform: scale(0.5);
       transform: scale(0.5);
     }
-    i{
+    i {
       color: #333;
     }
   }

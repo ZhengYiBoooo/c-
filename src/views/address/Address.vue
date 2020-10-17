@@ -8,13 +8,41 @@
       </template>
     </van-nav-bar>
 
-    <van-popup v-model="show" round position="bottom" :style="{ height: '40%' }"
-      >内容</van-popup
+    <van-popup
+      v-model="show"
+      round
+      position="bottom"
+      :style="{ height: '40%' }"
     >
+      <div class="paywrap">
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/wxpay.png" alt="" />
+            <p>微信支付</p>
+          </div>
+          <input type="radio" class="payitems-rad" name="language" value="java" />
+        </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/zfbpay.jpg" alt="" />
+            <p>支付宝支付</p>
+          </div>
+          <input type="radio" class="payitems-rad" name="language" value="sss" />
+        </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/wxpay.png" alt="" />
+            <p>微信支付</p>
+          </div>
+          <input type="radio" class="payitems-rad" name="language" value="aaaa" />
+        </div>
+        <van-button type="primary" size="large">立即支付</van-button>
+      </div>
+    </van-popup>
     <!-- 提交订单 -->
     <div class="Totalprice">
       <p>
-        <span>商品金额</span><span>￥{{ numsum.toFixed(2) }}</span>
+        <span>商品金额</span><span>￥{{ (numsum / 1000).toFixed(2) }}</span>
       </p>
       <p><span>配送费</span><span>￥3</span></p>
       <div class="Totalprice-sum">
@@ -27,7 +55,7 @@
           >提交订单</van-button
         >
         <span
-          >实付 <span>￥{{ (numsum + 3).toFixed(2) }}</span></span
+          >实付 <span>￥{{ (numsum / 1000 + 3).toFixed(2) }}</span></span
         >
       </div>
     </div>
@@ -35,16 +63,18 @@
       <!-- 订单中心 -->
       <div class="add-body">
         <!-- 订单地址选项 -->
-        <div class="add-list-edit-ol" v-if="bgm == false">
+        <div class="add-list-edit-ol" v-if="bgm == true">
           <van-address-edit
             class="add-list-edit-ol-add"
-            :area-list="areaList"
+            :area-list="maplist"
             show-search-result
             save-button-text="保存并使用"
             :search-result="searchResult"
             :area-columns-placeholder="['请选择', '请选择', '请选择']"
+            tel-maxlength="11"
             @save="onSave"
             @delete="onDelete"
+            @change-area="changmap"
             @change-detail="onChangeDetail"
           />
         </div>
@@ -58,29 +88,39 @@
           </div>
           <div class="add-list-right">
             <div class="add-right-tit">
-              <span>王小明</span>
-              <span>136 3714 0505</span>
-              <span>家</span>
+              <span>{{ shopaddlist.shippingName }}</span>
+              <span>{{ shopaddlist.shippingTel }}</span>
+              <span>{{ shopaddlist.label }}</span>
             </div>
             <div class="add-right-bottom">
-              <p>浙江省杭州市萧山区金鸡路知稼苑停车场 入口21幢906</p>
+              <p>{{ shopaddlist.shippingAddress }}</p>
             </div>
 
-            <van-icon name="arrow" class="add-right-bottom-icon" @click="receive" />
+            <van-icon
+              name="arrow"
+              class="add-right-bottom-icon"
+              @click="receive"
+            />
           </div>
         </div>
         <!-- 订单商品列表 -->
         <div class="add-list-shop">
-          <div class="shopitems" v-for="(item, index) in newlist" :key="index">
+          <div
+            class="shopitems"
+            v-for="(item, index) in newshoplist"
+            :key="index"
+          >
             <div class="shopitems-right">
-              <van-image round :src="item.url" class="shopitems-img" />
+              <van-image round :src="item.thumbnail" class="shopitems-img" />
               <div class="shopitems-cont">
-                <p>{{ item.shop }}</p>
+                <p>{{ item.goodsName }}</p>
                 <p>中果 / {{ item.jin }}斤</p>
               </div>
               <div class="shopitems-speci">
-                <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
-                <span>x{{ item.num }}</span>
+                <p>
+                  ￥{{ ((item.price * item.goodsCount) / 1000).toFixed(2) }}
+                </p>
+                <span>x{{ item.goodsCount }}</span>
               </div>
             </div>
           </div>
@@ -103,6 +143,8 @@
 </template>
 <script>
 import { Toast } from "vant";
+import maps from "../js/map";
+import { userexpress, userexpsubmit } from "../https/api";
 export default {
   data() {
     return {
@@ -111,46 +153,48 @@ export default {
       num: 0,
       show: false,
       bgm: false,
-      areaList: {
-        province_list: {
-          110000: "北京市",
-          120000: "天津市",
-        },
-        city_list: {
-          110100: "北京市",
-          110200: "县",
-          120100: "天津市",
-          120200: "县",
-        },
-        county_list: {
-          110101: "东城区",
-          110102: "西城区",
-          110105: "朝阳区",
-          110106: "丰台区",
-          120101: "和平区",
-          120102: "河东区",
-          120103: "河西区",
-          120104: "南开区",
-          120105: "河北区",
-          // ....
-        },
-      },
-
+      maplist: {},
       searchResult: [],
+      shopaddlist: [],
+
+      newshoplist: [],
     };
   },
   created() {
-    this.newlist = JSON.parse(this.$route.query.res);
+    // this.newlist = this.$route.query.res;
+    this.userexpress();
+    this.maplist = maps;
+    this.newshoplist = JSON.parse(this.$store.state.shopcar);
+    console.log(this.newshoplist);
   },
   methods: {
     onClickLeft() {
-      this.$router.go(-1);
+      this.$router.push({
+        name: "Shopcar",
+      });
     },
-    onSave() {
-      Toast("save");
+    onSave(content) {
+      console.log(this.shopaddlist);
+      let userexpsubmitlist = {
+        label: "公司",
+        shippingAddress: content.addressDetail,
+        shippingCityId: content.city,
+        shippingCountryId: content.areaCode,
+        shippingName: content.name,
+        shippingProvinceId: content.province,
+        shippingTel: content.tel,
+      };
+      this.userexpsubmit(userexpsubmitlist);
+      this.userexpress();
+      this.$router.go(0);
     },
     onDelete() {
       Toast("delete");
+    },
+
+    async userexpsubmit(e) {
+      const res = await userexpsubmit(e);
+      console.log(res.data);
     },
     onChangeDetail(val) {
       if (val) {
@@ -167,17 +211,34 @@ export default {
     showPopup() {
       this.show = true;
     },
-    receive(){
+    receive() {
       this.$router.push({
-        name:'Receive'
-      })
-    }
+        name: "Receive",
+        query: {
+          tag: "Receive",
+        },
+      });
+    },
+    async userexpress() {
+      const res = await userexpress();
+      this.shopaddlist = res.data.records[0];
+      console.log(this.shopaddlist);
+      if (res.data.records.length <= 0) {
+        this.bgm = true;
+      } else {
+        this.bgm = false;
+      }
+      console.log("用户收货地址", res.data.records);
+    },
+    changmap(values) {
+      console.log(values);
+    },
   },
   computed: {
     numsum() {
       var n = 0;
       this.newlist.forEach((item) => {
-        return (n += item.pires * item.num);
+        return (n += item.price * item.goodsCount);
       });
       return n;
     },
@@ -432,6 +493,38 @@ export default {
           background: #fff;
         }
       }
+    }
+  }
+}
+.paywrap {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  .payitems {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    .payitems-left {
+      display: flex;
+      align-items: center;
+      img {
+        width: 25px;
+        height: 25px;
+        margin-right: 15px;
+        border-radius: 5px;
+      }
+      p {
+        font-size: 18px;
+        color: #676568;
+      }
+    }
+    .payitems-rad{
+      width: 15px;
+      height: 15px;
     }
   }
 }

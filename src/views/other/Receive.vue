@@ -1,7 +1,7 @@
 <template>
   <div class="receive">
     <!-- 导航栏 -->
-    
+
     <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop">
       <template #left>
         <van-icon name="arrow-left" size="18" /><span>我的收货地址</span>
@@ -10,82 +10,62 @@
         <span class="sp-right" @click="Editressnew">添加新地址</span>
       </template>
     </van-nav-bar>
-
     <div class="receive-wrap">
-      <div class="receive-items">
+      <div
+        class="receive-items"
+        v-for="(item, index) in presslist"
+        :key="index"
+      >
         <div class="receive-items-left">
           <div class="receive-items-left-title">
             <div class="receive-items-left-title-info">
-              <span>王小明</span>
-              <span>136 3714 0505</span>
+              <span>{{ item.shippingName }}</span>
+              <span>{{ item.shippingTel }}</span>
             </div>
             <span class="receive-items-tag"
-              ><van-tag color="#00CC66">家</van-tag
-              ><van-tag color="#FFCC33">默认</van-tag></span
+              ><van-tag color="#00CC66">{{ item.label }}</van-tag></span
             >
           </div>
           <div class="receive-items-left-bottom">
-            <p>浙江省杭州市萧山区金鸡路知稼苑停车场入口21幢906</p>
+            <p>{{ item.shippingAddress }}</p>
           </div>
         </div>
         <div class="receive-items-right">
-          <van-icon name="newspaper-o" @click="editress" />
-        </div>
-      </div>
-      <div class="receive-items">
-        <div class="receive-items-left">
-          <div class="receive-items-left-title">
-            <div class="receive-items-left-title-info">
-              <span>王小明</span>
-              <span>136 3714 0505</span>
-            </div>
-            <span class="receive-items-tag"
-              ><van-tag color="#00CC66">家</van-tag
-              ><van-tag color="#FFCC33">默认</van-tag></span
-            >
-          </div>
-          <div class="receive-items-left-bottom">
-            <p>浙江省杭州市萧山区金鸡路知稼苑停车场入口21幢906</p>
-          </div>
-        </div>
-        <div class="receive-items-right">
-          <van-icon name="newspaper-o" @click="editress" />
-        </div>
-      </div>
-      <div class="receive-items">
-        <div class="receive-items-left">
-          <div class="receive-items-left-title">
-            <div class="receive-items-left-title-info">
-              <span>王小明</span>
-              <span>136 3714 0505</span>
-            </div>
-            <span class="receive-items-tag"
-              ><van-tag color="#00CC66">家</van-tag
-              ><van-tag color="#FFCC33">默认</van-tag></span
-            >
-          </div>
-          <div class="receive-items-left-bottom">
-            <p>浙江省杭州市萧山区金鸡路知稼苑停车场入口21幢906</p>
-          </div>
-        </div>
-        <div class="receive-items-right">
-          <van-icon name="newspaper-o" @click="editress" />
+          <van-icon name="newspaper-o" @click="editress(item)" />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
+import { userexpress } from "../https/api";
 export default {
+  data() {
+    return {
+      presslist: [],
+    };
+  },
+  created() {
+    this.userexpress();
+  },
   methods: {
     onClickLeft() {
-      this.$router.push({
-        name: "Mystyle",
-      });
+      if (this.$route.query.tag == "Receive") {
+        this.$router.push({
+          name: "Address",
+        });
+      } else {
+        this.$router.push({
+          name: "Mystyle",
+        });
+      }
     },
-    editress() {
+    editress(e) {
       this.$router.push({
         name: "Editress",
+        query: {
+          ids: e,
+        },
       });
     },
     Editressnew() {
@@ -95,6 +75,11 @@ export default {
           num: "10",
         },
       });
+    },
+    async userexpress() {
+      const res = await userexpress();
+      this.presslist = res.data.records;
+      console.log(this.presslist);
     },
   },
 };
@@ -159,6 +144,7 @@ export default {
       box-shadow: 5px 5px 5px #eeee, -1px -1px 1px #eeee;
       margin-bottom: 20px;
       .receive-items-left {
+        width: 100%;
         margin-right: 35px;
         .receive-items-left-title {
           width: 100%;

@@ -10,7 +10,6 @@ axios.interceptors.response.use(function (response) {
             name: 'Login'
         })
     }
-    console.log('拦截器', response)
     return response;
 }, function (error) {
     // 对响应错误做点什么
@@ -26,6 +25,7 @@ export const http = (url, method = "get", data, params) => {
             method,
             headers: {
                 Authorization: 'Basic c3dvcmQ6c3dvcmRfc2VjcmV0',
+                'Blade-Auth': 'bearer ' + store.state.access_token,
                 'Tenant-Id': '000000'
             },
             data,
