@@ -1,10 +1,13 @@
 <template>
   <div class="address">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop"
+    <van-nav-bar
+      left-arrow
+      @click-left="onClickLeft"
+      id="addTop"
+      title="填写订单"
       ><template #left>
         <van-icon name="arrow-left" size="18" />
-        <span>填写订单</span>
       </template>
     </van-nav-bar>
 
@@ -12,31 +15,43 @@
       v-model="show"
       round
       position="bottom"
-      :style="{ height: '40%' }"
+      :style="{ height: '30%' }"
+      @close="porpo"
     >
       <div class="paywrap">
-        <div class="payitems">
-          <div class="payitems-left">
-            <img src="../../assets/wxpay.png" alt="" />
-            <p>微信支付</p>
-          </div>
-          <input type="radio" class="payitems-rad" name="language" value="java" />
-        </div>
         <div class="payitems">
           <div class="payitems-left">
             <img src="../../assets/zfbpay.jpg" alt="" />
             <p>支付宝支付</p>
           </div>
-          <input type="radio" class="payitems-rad" name="language" value="sss" />
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 1))"
+          />
         </div>
         <div class="payitems">
           <div class="payitems-left">
             <img src="../../assets/wxpay.png" alt="" />
             <p>微信支付</p>
           </div>
-          <input type="radio" class="payitems-rad" name="language" value="aaaa" />
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 2))"
+          />
         </div>
-        <van-button type="primary" size="large">立即支付</van-button>
+        <van-button
+          type="primary"
+          size="large"
+          @click="showPopup"
+          :disabled="paylist != 2 && paylist != 1"
+          >立即支付</van-button
+        >
       </div>
     </van-popup>
     <!-- 提交订单 -->
@@ -44,18 +59,27 @@
       <p>
         <span>商品金额</span><span>￥{{ (numsum / 1000).toFixed(2) }}</span>
       </p>
-      <p><span>配送费</span><span>￥3</span></p>
+      <p>
+        <span>配送费</span
+        ><span>{{ bgm == false ? "￥" + goodsfree : ssss }}</span>
+      </p>
       <div class="Totalprice-sum">
         <van-button
           round
           type="info"
           color="#01B44A"
           class="btn"
-          @click="showPopup"
+          @click="showssss"
+          :disabled="bgm == true"
           >提交订单</van-button
         >
         <span
-          >实付 <span>￥{{ (numsum / 1000 + 3).toFixed(2) }}</span></span
+          >实付
+          <span
+            >￥{{
+              goodsfree == 0 ? numsum / 1000 : numsum / 1000 + goodsfree
+            }}</span
+          ></span
         >
       </div>
     </div>
@@ -64,36 +88,28 @@
       <div class="add-body">
         <!-- 订单地址选项 -->
         <div class="add-list-edit-ol" v-if="bgm == true">
-          <van-address-edit
-            class="add-list-edit-ol-add"
-            :area-list="maplist"
-            show-search-result
-            save-button-text="保存并使用"
-            :search-result="searchResult"
-            :area-columns-placeholder="['请选择', '请选择', '请选择']"
-            tel-maxlength="11"
-            @save="onSave"
-            @delete="onDelete"
-            @change-area="changmap"
-            @change-detail="onChangeDetail"
-          />
+          <div class="add-list-edit-ol-ress" @click="clickicress">
+            <p>请选择收货地址</p>
+            <van-icon name="arrow" />
+          </div>
         </div>
         <div class="add-list-edit" v-if="bgm == false">
-          <div class="add-list-img">
-            <van-image
-              round
-              src="https://img.yzcdn.cn/vant/cat.jpeg"
-              class="shopitems-img"
-            />
-          </div>
           <div class="add-list-right">
             <div class="add-right-tit">
-              <span>{{ shopaddlist.shippingName }}</span>
-              <span>{{ shopaddlist.shippingTel }}</span>
-              <span>{{ shopaddlist.label }}</span>
+              <span>{{ newlsitfshop.shippingName }}</span>
+              <span>{{ newlsitfshop.shippingTel }}</span>
+              <span>{{ newlsitfshop.label }}</span>
+              <span v-show="newlsitfshop.isDefault == 1 ? true : false"
+                >默认</span
+              >
             </div>
             <div class="add-right-bottom">
-              <p>{{ shopaddlist.shippingAddress }}</p>
+              <p>
+                <span>{{ newlsitfshop.shippingProvinceId }}</span>
+                <span>{{ newlsitfshop.shippingCityId }}</span>
+                <span>{{ newlsitfshop.shippingCountryId }}</span>
+                {{ newlsitfshop.shippingAddress }}
+              </p>
             </div>
 
             <van-icon
@@ -114,18 +130,15 @@
               <van-image round :src="item.thumbnail" class="shopitems-img" />
               <div class="shopitems-cont">
                 <p>{{ item.goodsName }}</p>
-                <p>中果 / {{ item.jin }}斤</p>
+                <p>{{ item.weight }}</p>
               </div>
               <div class="shopitems-speci">
-                <p>
-                  ￥{{ ((item.price * item.goodsCount) / 1000).toFixed(2) }}
-                </p>
+                <p>￥{{ (item.price / 1000).toFixed(2) }}</p>
                 <span>x{{ item.goodsCount }}</span>
               </div>
             </div>
           </div>
           <div class="distribution">
-            <div class="distribution-tit">配送费￥3</div>
             <div class="distribution-con">
               <van-cell-group>
                 <van-field
@@ -144,7 +157,14 @@
 <script>
 import { Toast } from "vant";
 import maps from "../js/map";
-import { userexpress, userexpsubmit } from "../https/api";
+import $ from "jquery";
+import {
+  userexpress,
+  userexpsubmit,
+  b2bordersubmit,
+  shopcarfree,
+  userexpsuinfos2,
+} from "../https/api";
 export default {
   data() {
     return {
@@ -153,19 +173,75 @@ export default {
       num: 0,
       show: false,
       bgm: false,
+      ssss: "请先添加收货地址",
       maplist: {},
       searchResult: [],
       shopaddlist: [],
-
       newshoplist: [],
+      addaress: [],
+      goodfree: {
+        ids: "",
+        countryId: "",
+      },
+      goodsfree: "",
+      newlsitfshop: {},
+      b2expreslist: [],
+      paylist: "",
+      payurls: "",
+      sdasd: {},
+      lisdadwq: {},
+      ssssss: {},
+      qqqqq: "",
+      osodsd: {},
     };
   },
   created() {
-    // this.newlist = this.$route.query.res;
     this.userexpress();
     this.maplist = maps;
     this.newshoplist = JSON.parse(this.$store.state.shopcar);
-    console.log(this.newshoplist);
+    let statusId = [];
+    this.newshoplist.map((item) => {
+      statusId.push(item.goodsId);
+    });
+    statusId = statusId.join(",");
+    this.goodfree.ids = statusId;
+    if (this.$store.state.addresslist.length == 0) {
+    } else {
+      if (
+        isNaN(
+          parseFloat(
+            JSON.parse(this.$store.state.addresslist).shippingCountryId
+          )
+        ) == false
+      ) {
+        this.newlsitfshop = JSON.parse(this.$store.state.addresslist);
+        this.newlsitfshop.shippingProvinceId = this.maplist.province_list[
+          this.newlsitfshop.shippingProvinceId + "0000"
+        ];
+        this.newlsitfshop.shippingCityId = this.maplist.city_list[
+          this.newlsitfshop.shippingCityId + "00"
+        ];
+
+        this.newlsitfshop.shippingCountryId = this.maplist.county_list[
+          this.newlsitfshop.shippingCountryId
+        ];
+      } else {
+        this.newlsitfshop = JSON.parse(this.$store.state.addresslist);
+      }
+    }
+    if (this.$store.state.addresslist.length != 0) {
+      let sdobhs = {
+        id: JSON.parse(this.$store.state.addresslist).id,
+      };
+      if (sdobhs.id != undefined && this.$store.state.addresslist != "") {
+        userexpsuinfos2(sdobhs).then((res) => {
+          this.goodfree.countryId = res.data.shippingCountryId;
+          shopcarfree(this.goodfree).then((ress) => {
+            this.goodsfree = ress.data.fee / 1000;
+          });
+        });
+      }
+    }
   },
   methods: {
     onClickLeft() {
@@ -173,29 +249,15 @@ export default {
         name: "Shopcar",
       });
     },
-    onSave(content) {
-      console.log(this.shopaddlist);
-      let userexpsubmitlist = {
-        label: "公司",
-        shippingAddress: content.addressDetail,
-        shippingCityId: content.city,
-        shippingCountryId: content.areaCode,
-        shippingName: content.name,
-        shippingProvinceId: content.province,
-        shippingTel: content.tel,
-      };
-      this.userexpsubmit(userexpsubmitlist);
-      this.userexpress();
-      this.$router.go(0);
+
+    addarea(e) {
+      this.addaress = e;
     },
+
     onDelete() {
       Toast("delete");
     },
 
-    async userexpsubmit(e) {
-      const res = await userexpsubmit(e);
-      console.log(res.data);
-    },
     onChangeDetail(val) {
       if (val) {
         this.searchResult = [
@@ -208,9 +270,52 @@ export default {
         this.searchResult = [];
       }
     },
-    showPopup() {
+
+    showssss() {
       this.show = true;
     },
+
+    showPopup() {
+      let mnmn = this.newshoplist;
+      mnmn.map((item) => {
+        item.quantity = item.goodsCount;
+        item.servicerGoodsId = item.servicerGoodsId;
+      });
+      let b2bord = {
+        goodsDTOList: mnmn,
+        noteContent: this.value,
+        payType: this.paylist,
+        shippingFare: this.goodsfree,
+        total: this.goodsfree + this.numsum / 1000,
+        shippingId: this.newlsitfshop.id,
+        storeId: this.$store.state.serverid,
+      };
+      b2bordersubmit(b2bord).then((res) => {
+        if (res.code == 200) {
+          this.payurls = res.data.payUrl;
+          this.$router.push({
+            name: "Oderall",
+            query: {
+              es: this.payurls,
+            },
+          });
+          Toast({
+            message: "提交订单...",
+            duration: 500,
+            position: "bottom",
+          });
+        }else{
+          
+          Toast({
+            message: res.msg,
+            duration: 1000,
+            position: "bottom",
+          });
+        }
+      });
+      this.show = false;
+    },
+
     receive() {
       this.$router.push({
         name: "Receive",
@@ -219,25 +324,72 @@ export default {
         },
       });
     },
+    clssa(e) {},
     async userexpress() {
       const res = await userexpress();
-      this.shopaddlist = res.data.records[0];
-      console.log(this.shopaddlist);
-      if (res.data.records.length <= 0) {
+      let yy = res.data.records;
+      console.log(res);
+      let sss = yy.filter((item) => {
+        return item.isDefault == 1;
+      });
+      this.ssssss = sss[0];
+      console.log(this.ssssss);
+      if (this.$store.state.addressId == "") {
+        this.lisdadwq = res.data.records[res.data.records.length - 1];
+      } else {
+        this.lisdadwq = res.data.records[this.$store.state.addressId];
+      }
+      // 判断收货默认地址和是否有地址
+      let objdefault = res.data.records;
+      let objs = objdefault.filter((item) => {
+        return item.isDefault == 1;
+      });
+      // if (objs.length <= 0) {
+      //   this.shopaddlist = res.data.records[0];
+      // } else {
+      //   for (var i = 0; i < objs.length; i++) {
+      //     this.shopaddlist = objs[0];
+      //   }
+      // }
+      if (res.data.records.length <= 0 || objs.length <= 0) {
         this.bgm = true;
       } else {
         this.bgm = false;
       }
-      console.log("用户收货地址", res.data.records);
+
+      // if (this.shopaddlist != undefined) {
+      //   this.shopaddlist.shippingProvinceId = this.maplist.province_list[
+      //     this.shopaddlist.shippingProvinceId + "0000"
+      //   ];
+      //   this.shopaddlist.shippingCityId = this.maplist.city_list[
+      //     this.shopaddlist.shippingCityId + "00"
+      //   ];
+      //   this.shopaddlist.shippingCountryId = this.maplist.county_list[
+      //     this.shopaddlist.shippingCountryId
+      //   ];
+      // }
     },
-    changmap(values) {
-      console.log(values);
+    porpo() {},
+    async b2bordersubmit(e) {
+      const res = await b2bordersubmit(e);
+      if (res.code == 200) {
+      } else {
+      }
+    },
+    clickicress() {
+      this.$router.push({
+        name: "Editress",
+        query: {
+          num: 10,
+          ress: 1,
+        },
+      });
     },
   },
   computed: {
     numsum() {
       var n = 0;
-      this.newlist.forEach((item) => {
+      this.newshoplist.forEach((item) => {
         return (n += item.price * item.goodsCount);
       });
       return n;
@@ -315,6 +467,15 @@ export default {
                 background: #00cc66;
                 padding: 0 10px 0 10px;
               }
+              &:nth-of-type(4) {
+                font-size: 14px;
+                color: #fff;
+                position: absolute;
+                right: 70px;
+                top: 5px;
+                background: #c5c5c5;
+                padding: 0 10px 0 10px;
+              }
             }
           }
           .add-right-bottom {
@@ -322,7 +483,9 @@ export default {
             margin-top: 6px;
             p {
               font-size: 14px;
-              max-width: 90%;
+              max-width: 75%;
+              overflow: hidden;
+              word-wrap: break-word;
             }
           }
 
@@ -359,7 +522,6 @@ export default {
               width: 70px;
               height: 70px;
               border: 0px solid #888888;
-              box-shadow: 5px 5px 5px #888888;
               img {
                 width: 70px;
                 height: 70px;
@@ -383,7 +545,7 @@ export default {
                   font-size: 15px;
                   font-weight: 100;
                   margin: 10px 0 10px 0;
-                  color: #8888;
+                  color: #333;
                   font-family: Microsoft YaHei;
                 }
               }
@@ -494,6 +656,22 @@ export default {
         }
       }
     }
+    .add-list-edit-ol-ress {
+      width: 100%;
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px 15px 10px 20px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      p {
+        font-size: 15px;
+      }
+      i {
+        font-size: 15px;
+      }
+    }
   }
 }
 .paywrap {
@@ -522,7 +700,7 @@ export default {
         color: #676568;
       }
     }
-    .payitems-rad{
+    .payitems-rad {
       width: 15px;
       height: 15px;
     }

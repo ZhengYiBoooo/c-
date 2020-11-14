@@ -20,6 +20,8 @@
         :area-columns-placeholder="['请选择', '请选择', '请选择']"
         @save="onSave"
         @delete="userexre(list.id)"
+        @change-area="addarea"
+        :tel-validator="validator"
       >
         <template>
           <div class="tagtop">
@@ -48,6 +50,8 @@ import {
   userexpress,
   userexpxiugai,
   userexremove,
+  userexpsuinfos,
+  userexpsuinfos2,
 } from "../https/api";
 export default {
   data() {
@@ -75,89 +79,290 @@ export default {
       maplist: {},
       userinfo: {},
       list: {},
-      labelitems:''
+      labelitems: "",
+      addaress: [],
+      str: "123456",
+      lablist: [],
+      indexs: "",
+      newnewlist: {},
+      ifnosalist: {},
+      mastelist: {
+        userId: "",
+      },
+      str: /^1/g,
     };
   },
-  created() {
+  async created() {
+    if (this.$route.query.asd != undefined) {
+      this.mastelist.userId = this.$route.query.asd;
+      const infose = await userexpsuinfos(this.mastelist);
+      this.ifnosalist = infose.data;
+    }
+    const res = await userexpress();
+    this.lablist = res.data.records;
     this.userinfo = this.$route.query.ids;
-    console.log(this.userinfo);
+    this.indexs = this.$route.query.inde;
     this.maplist = maps;
     if (this.$route.query.num == "10") {
       this.list = {};
     } else {
+      let defaultids = "";
+      if (this.userinfo.isDefault == "1") {
+        defaultids = true;
+      } else {
+        defaultids = false;
+      }
       this.list = {
         name: this.userinfo.shippingName,
         tel: this.userinfo.shippingTel,
         addressDetail: this.userinfo.shippingAddress,
-        areaCode: this.userinfo.shippingCountryId,
+        areaCode: this.lablist[this.indexs].shippingCountryId,
         id: this.userinfo.id,
+        province: this.userinfo.shippingProvinceId,
+        city: this.userinfo.shippingCityId,
+        isDefault: defaultids,
       };
+      console.log(this.userinfo);
     }
   },
   methods: {
-    onClickLeft() {
-      this.$router.push({
-        name: "Receive",
-      });
+    validator(e) {
+      console.log(e);
+      let myreg1 = /^1[3456789]\d{9}$/;
+      let myreg2 = /^[2][3,4,5,7,8][0-9]{6}$/;
+      if (!myreg1.test(e) && !myreg2.test(e)) {
+        console.log("手机号错误");
+        return false;
+      } else {
+        console.log("手机号正确");
+        return true;
+      }
     },
-    onSave(content) {
-      console.log(content);
-      console.log(this.maplist);
-      if (this.$route.query.num == "10") {
-        let userexpsubmitlist = {
-          label: this.labelitems,
-          shippingAddress: content.addressDetail,
-          shippingCityId: content.city,
-          shippingCountryId: content.areaCode,
-          shippingName: content.name,
-          shippingProvinceId: content.province,
-          shippingTel: content.tel,
-        };
-        this.userexpsubmit(userexpsubmitlist);
-        this.userexpress();
+    onClickLeft() {
+      if (this.$route.query.ress == 1) {
         this.$router.push({
-          name: "Receive",
+          name: "Address",
         });
       } else {
-        let userexpsubmitxiugai = {
-          label: this.labelitems,
-          shippingAddress: content.addressDetail,
-          shippingCityId: content.city,
-          shippingCountryId: content.areaCode,
-          shippingName: content.name,
-          shippingProvinceId: content.province,
-          shippingTel: content.tel,
-          id: content.id,
-        };
-        this.userexpxiugai(userexpsubmitxiugai);
-        this.userexpress();
         this.$router.push({
           name: "Receive",
         });
       }
     },
-    async userexpsubmit(e) {
-      const res = await userexpsubmit(e);
-      console.log(res.data);
+    addarea(e) {
+      this.addaress = e;
     },
+    onSave(content) {
+      let defaultid = "";
+      if (content.isDefault == true) {
+        defaultid = "1";
+      } else {
+        defaultid = "0";
+      }
+      if (this.$route.query.ress == "1" && this.$route.query.num == "10") {
+        let userexpsubmitlist = {
+          label: this.labelitems,
+          shippingAddress: content.addressDetail,
+          shippingCityId: this.addaress[1].code.substr(0, 4),
+          shippingCountryId: content.areaCode,
+          shippingName: content.name,
+          shippingProvinceId: this.addaress[0].code.substr(0, 2),
+          shippingTel: content.tel,
+          isDefault: "1",
+        };
+        var that = this;
+        console.log(userexpsubmitlist);
+        userexpsubmit(userexpsubmitlist)
+          .then((res) => {
+            if (res.code == 200) {
+              userexpress().then((ress) => {
+                if (ress.code == 200) {
+                  let obj = {
+                    id: ress.data.records[0].id,
+                  };
+                  userexpsuinfos2(obj).then((v) => {
+                    that.$store.commit("changeaddress", JSON.stringify(v.data));
+                    if (v.code == 200) {
+                      this.$router.push({
+                        name: "Address",
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else if (
+        this.$route.query.num == "10" &&
+        this.$route.query.ress == undefined
+      ) {
+        let userexpsubmitlist = {
+          label: this.labelitems,
+          shippingAddress: content.addressDetail,
+          shippingCityId: this.addaress[1].code.substr(0, 4),
+          shippingCountryId: content.areaCode,
+          shippingName: content.name,
+          shippingProvinceId: this.addaress[0].code.substr(0, 2),
+          shippingTel: content.tel,
+          isDefault: defaultid,
+        };
+        var that = this;
+        userexpsubmit(userexpsubmitlist)
+          .then((res) => {
+            if (res.code == 200) {
+              userexpress().then((ress) => {
+                if (ress.code == 200) {
+                  let obj = {
+                    id: ress.data.records[ress.data.records.length - 1].id,
+                  };
+                  let yyy = ress.data.records.filter((item) => {
+                    return item.isDefault == 1;
+                  });
+                  userexpsuinfos2(obj).then((v) => {
+                    that.$store.commit("changeaddress", JSON.stringify(v.data));
+                    if (v.code == 200) {
+                      this.$router.push({
+                        name: "Receive",
+                      });
+                    }
+                  });
+                }
+              });
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        if (this.addaress.length <= 0) {
+          let userexpsubmitxiugai = {
+            label: this.labelitems,
+            shippingAddress: content.addressDetail,
+            shippingCityId: this.ifnosalist.shippingCityId,
+            shippingCountryId: content.areaCode,
+            shippingName: content.name,
+            shippingProvinceId: this.ifnosalist.shippingProvinceId,
+            shippingTel: content.tel,
+            id: content.id,
+            isDefault: defaultid,
+          };
+          userexpxiugai(userexpsubmitxiugai)
+            .then((res) => {
+              if (res.code == 200) {
+                if (
+                  this.userinfo.id ==
+                  JSON.parse(this.$store.state.addresslist).id
+                ) {
+                  let obj = {
+                    id: this.userinfo.id,
+                  };
+                  var that = this;
+                  userexpsuinfos2(obj).then((res) => {
+                    this.$store.commit(
+                      "changeaddress",
+                      JSON.stringify(res.data)
+                    );
 
+                    if (res.code == 200) {
+                      this.$router.push({
+                        name: "Receive",
+                      });
+                    }
+                    
+                  });
+                } else {
+                  this.$router.push({
+                    name: "Receive",
+                  });
+                }
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+
+          // this.$store.commit(
+          //   "changeaddress",
+          //   JSON.stringify(userexpsubmitxiugai)
+          // );
+        } else {
+          let userexpsubmitxiugai = {
+            label: this.labelitems,
+            shippingAddress: content.addressDetail,
+            shippingCityId: this.addaress[1].code.substr(0, 4),
+            shippingCountryId: content.areaCode,
+            shippingName: content.name,
+            shippingProvinceId: this.addaress[0].code.substr(0, 2),
+            shippingTel: content.tel,
+            id: content.id,
+            isDefault: defaultid,
+          };
+          userexpxiugai(userexpsubmitxiugai)
+            .then((res) => {
+              if (res.code == 200) {
+                if (
+                  this.userinfo.id ==
+                  JSON.parse(this.$store.state.addresslist).id
+                ) {
+                  let obj = {
+                    id: this.userinfo.id,
+                  };
+                  var that = this;
+                  userexpsuinfos2(obj).then((res) => {
+                    that.$store.commit(
+                      "changeaddress",
+                      JSON.stringify(res.data)
+                    );
+                    if (res.code == 200) {
+                      this.$router.push({
+                        name: "Receive",
+                      });
+                    }
+                  });
+                } else {
+                  this.$router.push({
+                    name: "Receive",
+                  });
+                }
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+          // this.$store.commit(
+          //   "changeaddress",
+          //   JSON.stringify(userexpsubmitxiugai)
+          // );
+        }
+      }
+    },
     async userexpress() {
       const res = await userexpress();
-      console.log(res.data);
-    },
-    async userexpxiugai(e) {
-      const res = await userexpxiugai(e);
-      console.log(res);
+      this.newnewlist = res.data.records[0];
     },
     userexre(e) {
       this.userexremove(e);
-      this.$router.push({
-        name: "Receive",
-      });
     },
     async userexremove(e) {
       const res = await userexremove(e);
-      console.log(res, "删除地址");
+      if (res.code == 200) {
+        userexpress().then((res) => {
+          this.$store.commit("addId", this.$store.state.addressId - 1);
+          if (this.$store.state.addressId < 0) {
+            localStorage.removeItem("addressId");
+          }
+          if (res.data.records.length <= 0) {
+            localStorage.removeItem("addresslist");
+            this.$router.go(0);
+          }
+        });
+        this.$router.push({
+          name: "Receive",
+        });
+      }
     },
 
     labeltouch(e) {
@@ -166,14 +371,13 @@ export default {
           this.lsittag[i].boo = true;
         }
         e.boo = false;
-      }else{
+      } else {
         for (var i = 0; i < this.lsittag.length; i++) {
           this.lsittag[i].boo = true;
         }
         e.boo = true;
       }
-      this.labelitems=e.name;
-      console.log(this.labelitems)
+      this.labelitems = e.name;
     },
   },
 };

@@ -8,76 +8,165 @@
       :centertitle="'订单详情'"
     ></opInion>
 
+    <van-popup
+      v-model="show"
+      round
+      position="bottom"
+      :style="{ height: '30%' }"
+      @close="porpo"
+    >
+      <div class="paywrap">
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/zfbpay.jpg" alt="" />
+            <p>支付宝支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 1))"
+          />
+        </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/wxpay.png" alt="" />
+            <p>微信支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 2))"
+          />
+        </div>
+        <van-button
+          type="primary"
+          size="large"
+          @click="showPopup"
+          :disabled="paylist != 2 && paylist != 1"
+          >立即支付</van-button
+        >
+      </div>
+    </van-popup>
     <div class="waitpa-wrap">
       <p class="wait-wrap-top-p">
-        <span>待支付</span>
+        <span>{{ statusls }}</span>
 
         <van-icon name="arrow" />
       </p>
-      <div class="wait-wrap">
+      <div class="wait-wrap" v-show="active == 1 || infomaster.status == 1">
         <p>等待买家付款</p>
         <p>30分钟内未支付订单自动取消</p>
-
+        
         <div class="shopitems-bottom">
-          <van-button plain type="primary" round size="small">付款</van-button>
-          <van-button plain type="default" round size="small" @click="cancel"
+          <van-button
+            type="primary"
+            round
+            size="small"
+            @click="paysumit(infomaster.id)"
+            >付款</van-button
+          >
+          <van-button
+            plain
+            type="default"
+            round
+            size="small"
+            @click="cancel(infomaster.id)"
             >取消订单</van-button
           >
           <span class="shopimore">更多</span>
         </div>
       </div>
 
-      <div class="wait-deliver">
+      <div class="wait-deliver" v-show="infomaster.status == 3">
         <div class="wait-deliver-img">
-          <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" class="logo" />
+          <img src="../../assets/waitdeli.png" alt="" class="logo" />
         </div>
         <div class="wait-deliver-content">
           <p>包裹正在等待揽收</p>
           <p>2020-08-25 10:03:59</p>
         </div>
-        <div class="wait-deliver-icon" @click="logistics">
+        <div class="wait-deliver-icon" @click="logistics(infomaster.id)">
           <van-icon name="arrow" color="#999" />
         </div>
       </div>
       <div class="address">
-        <div class="address-icon">
+        <div class="wait-deliver-img" v-show="infomaster.status == 3">
+          <img src="../../assets/position.png" alt="" class="logo" />
+        </div>
+        <div class="address-icon" v-show="infomaster.status != 3">
           <van-icon name="location-o" />
           <span>收货地址：</span>
         </div>
         <div class="address-text">
-          <p>浙江省杭州市萧山区知稼苑21幢906</p>
-          <p>13637140505</p>
-          <p>王小明</p>
+          <p>
+            {{
+              infomaster.shippingProvinceId == infomaster.shippingCityId
+                ? infomaster.shippingCityId +
+                  infomaster.shippingCountryId +
+                  infomaster.shippingAddress
+                : infomaster.shippingProvinceId +
+                  infomaster.shippingCityId +
+                  infomaster.shippingCountryId +
+                  infomaster.shippingAddress
+            }}
+          </p>
+          <p>{{ infomaster.shippingTel }}</p>
+          <p>{{ infomaster.shippingName }}</p>
         </div>
       </div>
-      <div class="shopitems" v-for="(item, index) in list" :key="index">
+      <div class="shopitems" v-for="(item, index) in goodslist" :key="index">
         <div class="shopitems-right">
-          <van-image round :src="item.url" class="shopitems-img" />
+          <van-image round :src="item.urlgoodss" class="shopitems-img" />
           <div class="shopitems-cont">
-            <p>{{ item.shop }}</p>
-            <p>中果 / {{ item.jin }}斤</p>
-            <p>x{{ item.num }}</p>
-            <!-- <p>运费{{ item.jin }}元</p> -->
+            <p>{{ item.name }}</p>
+            <p>{{ item.weight }}</p>
+            <p>x{{ item.quantity }}</p>
           </div>
           <div class="shopitems-speci">
-            <p>￥{{ (item.pires * item.num).toFixed(2) }}</p>
-            <!-- <p>{{ item.pires }}</p> -->
-            <!-- <p>x{{ item.num }}</p> -->
+            <p>￥{{ (item.price / 1000).toFixed(2) }}</p>
+            <van-button
+              type="default"
+              size="small"
+              plain
+              hairline
+              round
+              style="
+                border-color: #999;
+                position: absolute;
+                right: 0;
+                top: 40px;
+                width: 77px;
+              "
+              v-show="infomaster.status == 2 || infomaster.status == 3"
+              @click="deldeshop($store.state.oderinfoid, index, infomaster.id)"
+              >{{
+                infomaster.status == 2 ? "取消订单" : "申请退款"
+              }}</van-button
+            >
           </div>
         </div>
       </div>
       <div class="shopit-pires">
         <p>
           <span>商品金额：</span>
-          <span><i>￥</i>136.9</span>
+          <span><i>￥</i>{{ infomaster.total / 1000 }}</span>
         </p>
         <p>
           <span>配送费：</span>
-          <span><i>￥</i>3</span>
+          <span><i>￥</i>{{ infomaster.shippingFare / 1000 }}</span>
         </p>
         <p>
           <span>实付金额：</span>
-          <span><i>￥</i>139.9</span>
+          <span
+            ><i>￥</i
+            >{{
+              infomaster.total / 1000 + infomaster.shippingFare / 1000
+            }}</span
+          >
         </p>
       </div>
       <div class="shopitems-info">
@@ -88,23 +177,33 @@
           <ul class="shopitems-info-content">
             <li>
               <span>订单编号：</span>
-              <span>12755478555544</span>
+              <span>{{ infomaster.orderNumAlias }}</span>
             </li>
             <li>
               <span>支付时间：</span>
-              <span>暂未支付</span>
+              <span>{{
+                infomaster.payTime == "" ? "暂未支付" : infomaster.payTime
+              }}</span>
             </li>
             <li>
               <span>交易单号：</span>
-              <span>55452278555544</span>
+              <span>{{
+                infomaster.shippingNo == ""
+                  ? "暂未进行交易"
+                  : infomaster.shippingNo
+              }}</span>
             </li>
             <li>
               <span>创建时间：</span>
-              <span>2020-08-25 10:03:59</span>
+              <span>{{ infomaster.createTime }}</span>
             </li>
             <li>
               <span>备注信息：</span>
-              <span>尽快发货</span>
+              <span>{{
+                infomaster.noteContent == ""
+                  ? "暂无备注"
+                  : infomaster.noteContent
+              }}</span>
             </li>
           </ul>
         </div>
@@ -113,62 +212,95 @@
   </div>
 </template>
 <script>
+import { Toast } from "vant";
 import { Dialog } from "vant";
 import opInion from "../../components/navbar/navbar.vue";
+import {
+  b2expinfolist,
+  shopcarfree,
+  b2borderemove,
+  b2AnOrder,
+} from "../https/api";
+import maps from "../js/map";
 export default {
   components: {
     opInion,
   },
   data() {
     return {
-      list: [
-        {
-          shop: "红",
-          url: "https://img.yzcdn.cn/vant/cat.jpeg",
-          pires: 36.9,
-          boo: false,
-          jin: 5,
-          num: 1,
-          id: 1,
-        },
-        {
-          shop: "红富",
-          url: "https://img.yzcdn.cn/vant/cat.jpeg",
-          pires: 36.9,
-          boo: false,
-          jin: 5,
-          num: 1,
-          id: 2,
-        },
-        {
-          shop: "红富士",
-          url: "https://img.yzcdn.cn/vant/cat.jpeg",
-          pires: 36.9,
-          boo: false,
-          jin: 5,
-          num: 1,
-          id: 3,
-        },
-        {
-          shop: "红富士苹",
-          url: "https://img.yzcdn.cn/vant/cat.jpeg",
-          pires: 36.9,
-          boo: false,
-          jin: 5,
-          num: 1,
-          id: 4,
-        },
-        {
-          shop: "红富士苹果",
-          url: "https://img.yzcdn.cn/vant/cat.jpeg",
-          pires: 36.9,
-          boo: false,
-          jin: 5,
-          num: 1,
-          id: 5,
-        },
-      ],
+      active: "",
+      status: "",
+      infomaster: {},
+      statusls: "",
+      goodslist: [],
+      optinoID: "",
+      maplist: {},
+      show: false,
+
+      paylist: "",
+      mainid: "",
+      rocallTime:''
     };
+  },
+  async created() {
+    this.maplist = maps;
+    this.optinoID = this.$store.state.oderinfoid;
+    let obj = {
+      id: this.optinoID,
+    };
+    const ress = await b2expinfolist(obj);
+    this.infomaster = ress.data;
+
+    this.infomaster.goods.forEach((items) => {
+      let imgobj = items.goodsImages.split(",");
+      items.urlgoodss = imgobj[imgobj.length - 1];
+    });
+    this.active = this.$route.query.active;
+    this.goodslist = this.infomaster.goods;
+    this.infomaster.shippingProvinceId = this.maplist.province_list[
+      this.infomaster.shippingProvinceId + "0000"
+    ];
+    this.infomaster.shippingCityId = this.maplist.city_list[
+      this.infomaster.shippingCityId + "00"
+    ];
+    this.infomaster.shippingCountryId = this.maplist.county_list[
+      this.infomaster.shippingCountryId
+    ];
+    // shopcarfree
+    if (this.infomaster.status == 1) {
+      this.statusls = "待付款";
+    }
+    if (this.infomaster.status == 2) {
+      this.statusls = "待发货";
+    }
+    if (this.infomaster.status == 3) {
+      this.statusls = "已发货";
+    }
+    if (this.infomaster.status == 4) {
+      this.statusls = "已收货";
+    }
+    if (this.infomaster.status == 5) {
+      this.statusls = "已完成";
+    }
+    if (this.infomaster.status == 6) {
+      this.statusls = "已取消";
+    }
+    if (this.infomaster.status == 7) {
+      this.statusls = "待退款";
+    }
+    if (this.infomaster.status == 8) {
+      this.statusls = "部分退款";
+    }
+    if (this.infomaster.status == 9) {
+      this.statusls = "退款完成";
+    }
+
+    
+    let dtsad=new Date();
+    let yy=[dtsad.getFullYear(),dtsad.getMonth()+1,dtsad.getDate()];
+    let bb=[dtsad.getHours(),dtsad.getMinutes(),dtsad.getSeconds()];
+    let YMCA=[yy.join('-'),bb.join(':')].join(' ');
+    this.ComputetTime(YMCA,this.infomaster.createTime);
   },
   methods: {
     onClickLeft() {
@@ -176,23 +308,125 @@ export default {
         name: "Oderall",
       });
     },
-
-    cancel() {
+    async b2borderemove(e) {
+      const res = await b2borderemove(e);
+      if (res.code == 200) {
+        this.$router.push({
+          name: "Oderall",
+        });
+      }
+    },
+    cancel(e) {
       Dialog.confirm({
         title: "取消订单",
         message: "您确定要取消订单吗",
       })
         .then(() => {
-          // on confirm
+          let obj = {
+            id: e,
+          };
+          this.b2borderemove(obj);
         })
         .catch(() => {
           // on cancel
         });
     },
-    logistics() {
+    logistics(e) {
       this.$router.push({
         name: "Logistics",
+        query: {
+          serId: e,
+        },
       });
+    },
+
+    porpo() {},
+    // 申请退款
+    deldeshop(e, y, s) {
+      if (this.infomaster.status == 2) {
+        Dialog.confirm({
+          title: "取消订单",
+          message: "您确定要取消订单吗",
+        })
+          .then(() => {
+            let obj = {
+              id: s,
+            };
+            this.b2borderemove(obj);
+            Toast({
+              message: "成功取消订单",
+              duration: 600,
+            });
+          })
+          .catch(() => {});
+      } else {
+        this.$router.push({
+          name: "Platform",
+          query: {
+            isd: e,
+            pages: "wait",
+            idnx: y,
+          },
+        });
+      }
+    },
+    paysumit(e) {
+      this.show = true;
+      this.mainid = e;
+    },
+    showPopup() {
+      let obj = {
+        id: this.mainid,
+        payType: this.paylist,
+      };
+      this.b2AnOrder(obj);
+      this.show = false;
+    },
+
+    clssa(e) {},
+    async b2AnOrder(e) {
+      const res = await b2AnOrder(e);
+      this.$router.push({
+        name: "Paypage",
+        query: {
+          es: res.data.payUrl,
+          idp: this.mainid,
+        },
+      });
+    },
+
+    ComputetTime(data,dataws) {
+      let st = data.replace(/\-/g, "/"), //当前服务器时间
+        ct = dataws.replace(/\-/g, "/"); //创建订单时间
+      let ts = new Date(st).getTime(),
+        tc = new Date(ct).getTime();
+      let cm = 30 * 60 * 1000 - (ts - tc);
+      this.runBack(cm);
+    },
+    runBack(cm) {
+      if (cm > 0) {
+        cm > 60000
+          ? (this.rocallTime =
+              (new Date(cm).getMinutes() < 10
+                ? "0" + new Date(cm).getMinutes()
+                : new Date(cm).getMinutes()) +
+              ":" +
+              (new Date(cm).getSeconds() < 10
+                ? "0" + new Date(cm).getSeconds()
+                : new Date(cm).getSeconds()))
+          : (this.rocallTime =
+              "00:" +
+              (new Date(cm).getSeconds() < 10
+                ? "0" + new Date(cm).getSeconds()
+                : new Date(cm).getSeconds()));
+        let _msThis = this;
+        setTimeout(function () {
+          cm -= 1000;
+          _msThis.runBack(cm);
+        }, 1000);
+      } else {
+        console.log(123);
+      }
     },
   },
 };
@@ -304,30 +538,33 @@ export default {
         overflow: hidden;
         border-radius: 50%;
         margin-right: 25px;
+        background: #00b047;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         img {
-          width: 100%;
-          height: 100%;
+          width: 23px;
+          height: 18px;
         }
       }
       .wait-deliver-content {
         overflow: hidden;
         display: flex;
         width: 200px;
+        align-items: center;
         flex-wrap: wrap;
-        margin-right: 25px;
+        margin-right: 40px;
         p {
           width: 100%;
           font-size: 15px;
           &:nth-of-type(1) {
-            color: #3696e1;
-            font-weight: 600;
+            color: #242424;
             font-size: 16px;
             margin-bottom: 10px;
             letter-spacing: 1px;
           }
           &:nth-of-type(2) {
             color: #999;
-            margin-bottom: 10px;
           }
         }
       }
@@ -348,6 +585,21 @@ export default {
       background: #fff;
       align-items: flex-start;
       margin-bottom: 10px;
+
+      .wait-deliver-img {
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        border-radius: 50%;
+        margin-right: 25px;
+        background: #00b047;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        img {
+          width: 20px;
+        }
+      }
       .address-icon {
         overflow: hidden;
         display: flex;
@@ -375,6 +627,8 @@ export default {
           width: 230px;
           max-width: 230px;
           margin-bottom: 7px;
+          word-break: break-all;
+          overflow: hidden;
           &:last-child {
             margin-bottom: 0;
           }
@@ -404,7 +658,8 @@ export default {
           width: 70px;
           height: 70px;
           border: 0px solid #888888;
-          box-shadow: 5px 5px 5px #888888;
+          border-radius: 50%;
+          overflow: hidden;
           img {
             width: 70px;
             height: 70px;
@@ -487,9 +742,8 @@ export default {
             &:last-child {
               color: red;
             }
-            i{
-              
-            color: red;
+            i {
+              color: red;
             }
           }
         }
@@ -541,7 +795,7 @@ export default {
             align-items: center;
             span {
               &:nth-of-type(1) {
-                color: #5E5E5E;
+                color: #5e5e5e;
               }
               &:nth-of-type(2) {
                 color: #242424;
@@ -550,6 +804,39 @@ export default {
           }
         }
       }
+    }
+  }
+}
+
+.paywrap {
+  width: 100%;
+  overflow: hidden;
+  background: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  .payitems {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    .payitems-left {
+      display: flex;
+      align-items: center;
+      img {
+        width: 25px;
+        height: 25px;
+        margin-right: 15px;
+        border-radius: 5px;
+      }
+      p {
+        font-size: 18px;
+        color: #676568;
+      }
+    }
+    .payitems-rad {
+      width: 15px;
+      height: 15px;
     }
   }
 }

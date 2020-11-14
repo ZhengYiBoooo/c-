@@ -52,22 +52,23 @@ export default {
   async created() {
     this.listmore = this.$route.query;
     const res = await logintoken(this.listmore);
-    console.log(res);
 
+    console.log(this.$route.query);
     this.$store.commit("show", res.access_token);
+    this.$store.commit('updataserveId',this.$route.query.servicerId)
+    this.$store.commit('usersa',this.$route.query.userId)
     // localStorage.setItem("access_token", res.access_token);
     if (res.role_name == "cuser") {
       this.$router.push({
         name: "Home",
-        query: {},
+        query: {
+        },
       });
     }
   },
   methods: {
     onFailed(errorInfo) {
       Notify({ type: "danger", message: "登录失败", duration: 1000 });
-
-      console.log(this.loginlist);
     },
     async onsubmit(el) {
       // this.loginlist.password = md5(this.loginlist.password);

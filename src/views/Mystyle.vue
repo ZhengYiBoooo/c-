@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="top-title">
+  <div class="wrap">
+    <div class="top-title" style="display: none">
       <img :src="userimg" alt="" class="logo" @click="myhome" />
       <div class="top-title-con">
         <p>优小果</p>
@@ -9,9 +9,9 @@
     </div>
     <div class="mysty">
       <!-- 商家信息 -->
-      <div class="mynews">
+      <!-- <div class="mynews">
         <van-icon name="chat-o" color="#fff" @click="mynews" />
-      </div>
+      </div> -->
       <!-- 四宫格 -->
       <div class="y-grid">
         <div class="my-grid-tit">
@@ -69,12 +69,13 @@
             </div>
             <p>联系客服</p>
           </div>
-          <div class="my-grid-box-items" @click="opinion">
+
+          <div class="my-grid-box-items" @click="mynews">
             <div class="my-grid-box-icon">
-              <img src="../assets/feedback.png" alt="" />
+              <van-icon name="chat-o" color="#07c160" />
               <!-- <van-icon name="qr" /> -->
             </div>
-            <p>意见反馈</p>
+            <p>消息通知</p>
           </div>
         </div>
       </div>
@@ -137,9 +138,14 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+.wrap {
+  width: 100%;
+  height: 100vh;
+  background: #f7f4f8;
+}
 .mysty {
   width: 100%;
-  background: #fff;
+  background: #f7f4f8;
   overflow: hidden;
   padding: 15px;
   box-sizing: border-box;
@@ -148,8 +154,8 @@ export default {
     padding: 15px;
     box-sizing: border-box;
     border-radius: 10px;
-    box-shadow: 5px 5px 5px #eeee, -1px -1px 1px #eeee;
-    margin-bottom: 30px;
+    // box-shadow: 5px 5px 5px #eeee, -1px -1px 1px #eeee;
+    margin-bottom: 15px;
     .my-grid-tit {
       width: 100%;
       display: flex;
@@ -164,6 +170,7 @@ export default {
         &:nth-of-type(2) {
           color: #7777;
           display: flex;
+          font-size: 13px;
           align-items: center;
         }
       }
@@ -206,7 +213,6 @@ export default {
     padding: 15px;
     box-sizing: border-box;
     border-radius: 10px;
-    box-shadow: 5px 5px 5px #eeee, -1px -1px 1px #eeee;
     .my-grid-tit {
       width: 100%;
       display: flex;
@@ -231,6 +237,7 @@ export default {
       display: flex;
       align-items: center;
       margin-top: 20px;
+      justify-content: space-between;
       .my-grid-box-items {
         width: 60px;
         background: #fff;
@@ -238,8 +245,13 @@ export default {
         align-items: center;
         flex-wrap: wrap;
         justify-content: center;
-        margin-right: 30px;
         margin-top: 5px;
+        i {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          font-size: 20px;
+        }
         .my-grid-box-icon {
           width: 20px;
           height: 20px;
@@ -298,11 +310,14 @@ export default {
     }
   }
 }
-.mynews {
-  position: fixed;
-  right: 20px;
-  top: 20px;
-  z-index: 1000;
-  text-align: right;
-}
+// .mynews {
+//   position: fixed;
+//   right: 20px;
+//   top: 20px;
+//   z-index: 1000;
+//   text-align: right;
+//   i{
+//     font-size: 20px;
+//   }
+// }
 </style>

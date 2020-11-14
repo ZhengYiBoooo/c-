@@ -1,28 +1,69 @@
 <template>
   <div class="platform">
     <opInion
-      :urls="'Details'"
-      :titleleft="'平台申诉'"
+      :urls="$route.query.pages == 'wait' ? 'Waitpay' : 'Details'"
+      :titleleft="''"
       :titleright="''"
+      :centertitle="'退款详情'"
     ></opInion>
     <div class="platform-wrap">
       <div class="platform-wrap-title">
-        <span>商家拒绝退款</span>
+        <span v-show="$route.query.pages == 'wait' ? false : true"
+          >商家拒绝退款</span
+        >
       </div>
 
       <div class="shopitems-wrap">
-        <div class="shopitems" v-for="(item, index) in list" :key="index">
+        <div class="shopitems">
           <div class="shopitems-right-tit"></div>
           <div class="shopitems-right">
-            <van-image round :src="item.url" class="shopitems-img" />
+            <van-image
+              round
+              :src="
+                $route.query.idss == undefined
+                  ? imgd
+                  : deleoder.goods.goodsImages
+              "
+              class="shopitems-img"
+            />
             <div class="shopitems-cont">
-              <p>{{ item.shop }}</p>
-              <p>中果 / {{ item.jin }}斤</p>
+              <p>
+                {{
+                  $route.query.idss == undefined
+                    ? oldlist.name
+                    : deleoder.goods.name
+                }}
+              </p>
+              <p>
+                {{
+                  $route.query.idss == undefined
+                    ? oldlist.weight
+                    : deleoder.goods.weight
+                }}g
+              </p>
+              <p>
+                x{{
+                  $route.query.idss == undefined
+                    ? oldlist.quantity
+                    : deleoder.goods.quantity
+                }}
+              </p>
+            </div>
+            <div class="shopitems-speci">
+              <p>
+                ￥{{
+                  (
+                    ($route.query.idss == undefined
+                      ? oldlist.price
+                      : deleoder.goods.price) / 1000
+                  ).toFixed(2)
+                }}
+              </p>
             </div>
           </div>
         </div>
         <div class="platform-reason">
-          <span>退款原因</span>
+          <span>退款原因：</span>
           <span @click="popup"
             >{{ numname }}
             <van-icon name="arrow" />
@@ -30,29 +71,37 @@
         </div>
         <div class="platform-refund">
           <div class="platform-refund-title">
-            <span>退款金额</span>
-            <span>￥19.9</span>
+            <span>退款金额：</span>
+            <span
+              >￥{{
+                $route.query.idss == undefined? (oldlist.total / 1000): (deleoder.goods.total / 1000)
+              }}</span
+            >
           </div>
           <div class="platform-refund-bottom">
             <input
               type="text"
-              placeholder="可修改，最多119.4￥，含运费￥0.00"
+              :placeholder="newmaxpirse"
+              v-model="pirestui"
+              @keyup="pagepirse(pirestui)"
             />
           </div>
         </div>
-        <div class="platform-explain">
-          <span>退款说明</span>
-          <van-field
-            v-model="message"
-            rows="1"
-            autosize
-            type="textarea"
-            placeholder="选填"
-          />
+        <div class="platform-explain-wrap">
+          <div class="platform-explain">
+            <span>退款说明：</span>
+            <van-field
+              v-model="message"
+              rows="1"
+              autosize
+              type="textarea"
+              placeholder="选填"
+            />
+          </div>
         </div>
         <div class="platform-upload">
           <div class="platform-upload-title">
-            <span>上传凭证</span>
+            <span>上传凭证：</span>
             <span>最多上传5张</span>
           </div>
           <van-uploader
@@ -60,17 +109,23 @@
             multiple
             :after-read="afterRead"
             :max-count="5"
+            accept="image/*"
           />
         </div>
       </div>
     </div>
-    <button class="submitBtn">提交</button>
+    <button class="submitBtn" @click="sumitshop(oldlist)">提交</button>
     <van-popup v-model="show" round position="bottom" class="popoup">
       <p>退款原因</p>
       <ul class="popoup-ul">
         <li v-for="(item, indexs) in popouplist" :key="indexs">
           <span>{{ item.name }}</span>
-          <input type="checkbox" v-model="item.boo" @click="boxcheck" />
+          <input
+            type="radio"
+            :value="item.name"
+            name="reand"
+            @click="boxcheck(item)"
+          />
         </li>
       </ul>
     </van-popup>
@@ -78,6 +133,12 @@
 </template>
 <script>
 import opInion from "../../components/navbar/navbar.vue";
+import {
+  b2expinfolist,
+  b2removeshop,
+  b2endpoint,
+  b2cordedetail,
+} from "../https/api";
 export default {
   components: {
     opInion,
@@ -101,7 +162,7 @@ export default {
         {
           id: 1,
           boo: false,
-          name: "商品变质/发霉/有异物",
+          name: "坏果烂果",
         },
         {
           id: 2,
@@ -116,40 +177,122 @@ export default {
         {
           id: 4,
           boo: false,
-          name: "少件",
+          name: "商品变质/发霉/有异物",
         },
         {
           id: 5,
           boo: false,
-          name: "其他",
+          name: "少件",
         },
       ],
       message: "",
       show: false,
-      bolist: [],
       numname: "请选择",
+      delsinfo: {},
+      delsinfoid: "",
+      maxpirse: "",
+      maxpirsefree: "",
+      newmaxpirse: "",
+      // 退款金额
+      pirestui: "",
+
+      uploadImages: [],
+      imgurllist: [],
+      pddlistimg: "",
+      goodsnums: "",
+      newshopss: [],
+      oldlist: {},
+      deleoder: {},
+      imgd: "",
     };
   },
-  created() {
-    console.log(this.bolist);
+  async created() {
+    this.delsinfoid = this.$route.query.isd;
+    this.goodsnums = this.$route.query.idnx;
+    let obj = {
+      id: this.delsinfoid,
+    };
+    const res = await b2expinfolist(obj);
+    this.delsinfo = res.data;
+    this.oldlist = this.delsinfo.goods[this.goodsnums];
+
+    let objinfo = {
+      id: this.$route.query.idss,
+    };
+    const ress = await b2cordedetail(objinfo);
+    this.deleoder = ress.data;
+
+    if (this.$route.query.idss == undefined) {
+      let sdasd = this.oldlist.goodsImages.split(",");
+      this.imgd = sdasd[sdasd.length - 1];
+      this.maxpirse = this.delsinfo.total / 1000;
+      this.maxpirsefree = this.delsinfo.shippingFare / 1000;
+      this.newmaxpirse = `可修改，最多￥${
+        this.maxpirse
+      }`;
+    } else {
+      let sdasd = this.deleoder.goods.goodsImages.split(",");
+      this.imgd = sdasd[sdasd.length - 1];
+      this.maxpirse = this.deleoder.total / 1000;
+      this.maxpirsefree = this.deleoder.shippingFare / 1000;
+      this.newmaxpirse = `可修改，最多￥${
+        this.maxpirse 
+      }`;
+    }
   },
   methods: {
     afterRead(file) {
-      // 此时可以自行将文件上传至服务器
-      console.log(file);
+      let formData = new window.FormData();
+      formData.append("file", file.file);
+      this.b2endpoint(formData);
     },
     popup() {
       this.show = true;
     },
-    boxcheck() {
-      for(var i=0;i<this.popouplist.length;i++){
-        console.log(this.popouplist[i])
+    boxcheck(e) {
+      this.numname = e.name;
+      this.show = false;
+    },
+    sumitshop(e) {
+      let sum = e.total / 1000;
+      let sumstatus = 0;
+      if (this.pirestui >= sum) {
+        this.pirestui = sum;
+        sumstatus = 1;
+      } else {
+        sumstatus = 2;
       }
-      // console.log(
-      //   this.popouplist.filter((item) => {
-      //     return item.boo != false;
-      //   })
-      // );
+      let obj = {
+        // 1 全部退款 2 部分退款
+        applyType: sumstatus,
+        bigApplyAmount: this.pirestui,
+        cause: this.numname,
+        goodsId: this.oldlist.id,
+        userRemark: this.message,
+        voucher: this.pddlistimg,
+      };
+      this.$router.push({
+        name: "Waitpay",
+      });
+      this.b2removeshop(obj);
+    },
+    async b2removeshop(e) {
+      const res = await b2removeshop(e);
+      console.log(res);
+    },
+
+    async b2endpoint(e) {
+      const res = await b2endpoint(e);
+      this.imgurllist.push(res.data.link);
+      this.pddlistimg = this.imgurllist.join(",");
+    },
+
+    pagepirse(e) {
+      let sum = this.oldlist.total / 1000 + this.delsinfo.shippingFare / 1000;
+
+      if (this.pirestui >= sum) {
+        this.pirestui = sum;
+      }
     },
   },
 };
@@ -158,15 +301,14 @@ export default {
 .platform {
   width: 100%;
   overflow: hidden;
-  background: #fff;
+  background: #f5f5f5;
   padding-top: 46px;
   box-sizing: border-box;
   .platform-wrap {
     width: 100%;
     overflow: hidden;
-    background: #fff;
-    padding: 20px;
-    padding-top: 0;
+    background: #f5f5f5;
+    margin-top: 10px;
     padding-bottom: 70px;
     box-sizing: border-box;
     .platform-wrap-title {
@@ -174,8 +316,9 @@ export default {
       overflow: hidden;
       background: #fff;
       padding-bottom: 10px;
+      padding-left: 15px;
+      padding-right: 10px;
       box-sizing: border-box;
-      padding-left: 5px;
       span {
         font-size: 13px;
       }
@@ -185,7 +328,6 @@ export default {
       width: 100%;
       overflow: hidden;
       background: #fff;
-      padding: 5px;
       box-sizing: border-box;
       .shopitems {
         display: flex;
@@ -193,15 +335,14 @@ export default {
         align-items: center;
         overflow: hidden;
         width: 100%;
-        padding: 20px;
+        padding: 10px;
+        padding-top: 0;
         padding-bottom: 10px;
         box-sizing: border-box;
         background: #fff;
         border-radius: 10px;
         margin-bottom: 10px;
         flex-wrap: wrap;
-        box-shadow: 0.133333rem 0.133333rem 0.133333rem #eeee,
-          -0.026667rem -0.026667rem 0.026667rem #eeee;
         .shopitems-right-tit {
           width: 100%;
           background: #fff;
@@ -239,7 +380,6 @@ export default {
             width: 70px;
             height: 70px;
             border: 0px solid #888888;
-            box-shadow: 5px 5px 5px #888888;
             img {
               width: 70px;
               height: 70px;
@@ -266,12 +406,18 @@ export default {
                 color: #8888;
                 font-family: Microsoft YaHei;
               }
+              &:nth-of-type(3) {
+                font-size: 15px;
+                font-weight: 100;
+                color: #8888;
+                font-family: Microsoft YaHei;
+              }
             }
           }
           .shopitems-speci {
             position: absolute;
-            right: -20px;
-            top: 5px;
+            right: 10px;
+            top: 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -280,7 +426,7 @@ export default {
               font-size: 15px;
               font-weight: 100;
               font-family: Microsoft YaHei;
-              color: red;
+              color: #242424;
               width: 100%;
               text-align: center;
             }
@@ -334,32 +480,38 @@ export default {
       .platform-reason {
         width: 100%;
         display: flex;
+        padding: 10px;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 0 10px 0;
         box-sizing: border-box;
         span {
           font-size: 14px;
+          color: #5e5e5e;
           &:nth-of-type(2) {
             display: flex;
             align-items: center;
+            color: #5e5e5e;
           }
         }
       }
       .platform-refund {
         width: 100%;
         overflow: hidden;
+        padding: 10px;
+        box-sizing: border-box;
         background: #fff;
+        padding-bottom: 0;
         .platform-refund-title {
           width: 100%;
           overflow: hidden;
           background: #fff;
           span {
             font-size: 14px;
+            color: #5e5e5e;
             &:nth-of-type(2) {
-              font-size: 13px;
+              font-size: 15px;
               margin-left: 20px;
-              color: red;
+              color: #242424;
             }
           }
         }
@@ -379,11 +531,15 @@ export default {
           }
         }
       }
+      .platform-explain-wrap {
+        padding: 10px;
+        box-sizing: border-box;
+        padding-top: 0;
+      }
       .platform-explain {
         width: 100%;
         overflow: hidden;
         background: #fff;
-        padding: 10px 0 10px 0;
         box-sizing: border-box;
         display: flex;
         border-bottom: 1px solid #eee;
@@ -392,12 +548,15 @@ export default {
           font-size: 14px;
           line-height: 44px;
           text-align: left;
+          color: #5e5e5e;
         }
       }
       .platform-upload {
         width: 100%;
         overflow: hidden;
         background: #fff;
+        padding: 10px;
+        box-sizing: border-box;
         .platform-upload-title {
           width: 100%;
           overflow: hidden;
@@ -405,6 +564,7 @@ export default {
           box-sizing: border-box;
           span {
             font-size: 14px;
+            color: #5e5e5e;
             &:nth-of-type(2) {
               font-size: 12px;
               margin-left: 20px;
@@ -421,14 +581,14 @@ export default {
     left: 0;
     width: 100%;
     border: none;
-    background: red;
+    background: #01b549;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 15px 0 15px 0;
     box-sizing: border-box;
-    font-size: 14px;
+    font-size: 18px;
   }
   .popoup {
     width: 100%;

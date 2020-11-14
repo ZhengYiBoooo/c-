@@ -7,7 +7,7 @@ axios.defaults.baseURL = "/api"
 axios.interceptors.response.use(function (response) {
     if (response.status === 400) {
         router.push({
-            name: 'Login'
+            name: 'About'
         })
     }
     return response;
@@ -34,10 +34,10 @@ export const http = (url, method = "get", data, params) => {
             if (res.status >= 200 && res.status < 300 || res.status == 304) {
                 resolve(res.data);
             } else {
-                reject(res);
+                reject(res.response.data);
             }
-        }).catch(err => {
-            reject(err)
+        }).catch(error => {
+            reject(error.response.data);
         })
     })
 }

@@ -2,8 +2,9 @@
   <div class="details">
     <opInion
       :urls="'Refund'"
-      :titleleft="'退款详情'"
+      :titleleft="''"
       :titleright="''"
+      :centertitle="'退款详情'"
     ></opInion>
     <div class="details-title">
       <p>请等待商家处理</p>
@@ -12,30 +13,19 @@
     <div class="details-wrap">
       <div class="details-wrap-info">
         <p>您已成功发起退款申请，请耐心等待商家处理</p>
-        <p>商家拒绝了退款</p>
       </div>
       <div class="details-info">
         <p>商家同意或超时未处理，系统将退款给您</p>
-        <p>如果商家拒绝，您可以修改退款申请后再次发起，商家 会重新处理</p>
+        <p>如果商家拒绝，您可以修改退款申请后再次发起，商家会重新处理</p>
         <div class="details-info-btn">
           <van-button
-            type="primary"
-            size="small"
+            type="default"
+            size="normal"
             round
             plain
-            color="#ff0066"
             class="detailsbtn"
+            @click="platform(shoplistinfo.goods.id)"
             >修改申请</van-button
-          >
-          <van-button
-            type="primary"
-            size="small"
-            round
-            plain
-            color="#ff0066"
-            class="detailsbtn"
-            @click="platform"
-            >平台申诉</van-button
           >
         </div>
       </div>
@@ -44,13 +34,17 @@
           <span>退款信息</span>
         </div>
         <div class="shopitems-wrap">
-          <div class="shopitems" v-for="(item, index) in list" :key="index">
+          <div class="shopitems">
             <div class="shopitems-right-tit"></div>
             <div class="shopitems-right">
-              <van-image round :src="item.url" class="shopitems-img" />
+              <van-image round :src="shoplistinfo.goods.goodsImages" class="shopitems-img" />
               <div class="shopitems-cont">
-                <p>{{ item.shop }}</p>
-                <p>中果 / {{ item.jin }}斤</p>
+                <p>{{ shoplistinfo.goods.name }}</p>
+                <p>{{ shoplistinfo.goods.weight}}</p>
+                <p>x{{ shoplistinfo.goods.quantity }}</p>
+              </div>
+              <div class="shopitems-speci">
+                <p>￥{{ (shoplistinfo.goods.price/1000).toFixed(2) }}</p>
               </div>
             </div>
           </div>
@@ -61,20 +55,20 @@
         <div class="shopitems-info-content-wrap">
           <ul class="shopitems-info-content">
             <li>
-              <span>退款金额</span>
-              <span>￥19.9</span>
+              <span>退款金额：</span>
+              <span>￥{{shoplistinfo.applyAmount/1000}}</span>
             </li>
             <li>
-              <span>退款原因</span>
-              <span>坏果烂果</span>
+              <span>退款原因：</span>
+              <span>{{shoplistinfo.cause}}</span>
             </li>
             <li>
-              <span>申请时间</span>
-              <span>2020-05-06 15:05:36</span>
+              <span>申请时间：</span>
+              <span>{{shoplistinfo.createTime}}</span>
             </li>
             <li>
-              <span>订单编号</span>
-              <span>155338552411</span>
+              <span>订单编号：</span>
+              <span>{{shoplistinfo.refundOrderNumAlias}}</span>
             </li>
           </ul>
         </div>
@@ -96,6 +90,7 @@
 </template>
 <script>
 import opInion from "../../components/navbar/navbar.vue";
+import { b2cordedetail } from "../https/api";
 export default {
   components: {
     opInion,
@@ -113,29 +108,44 @@ export default {
           id: 1,
         },
       ],
+      shoplistinfo:{},
+      optionID:''
     };
   },
-  methods:{
-      platform(){
-          this.$router.push({
-              name:'Platform'
-          })
-      }
-  }
+  async created() {
+    this.optionID=this.$route.query.ids;
+    let obj={
+      id:optionID
+    }
+    const res = await b2cordedetail(obj);
+    this.shoplistinfo=res.data;
+  },
+  methods: {
+    platform(e) {
+      this.$router.push({
+        name: "Platform",
+        query:{
+          idss:e
+        }
+      });
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>
 .details {
   width: 100%;
   overflow: hidden;
-  background: #fff;
+  background: #f7f4f8;
   padding-top: 46px;
   box-sizing: border-box;
   .details-title {
     width: 100%;
     padding: 20px;
+    padding-top: 25px;
+    padding-bottom: 25px;
     box-sizing: border-box;
-    background: #ff0066;
+    background: #01b44a;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -144,22 +154,22 @@ export default {
       color: #fff;
       font-size: 15px;
       &:nth-of-type(1) {
-        margin-bottom: 30px;
+        margin-bottom: 10px;
       }
     }
   }
   .details-wrap {
     width: 100%;
     overflow: hidden;
-    background: #fff;
-    padding: 20px;
+    background: #f7f4f8;
+    // padding: 20px;
     box-sizing: border-box;
+    margin-top: 10px;
     .details-wrap-info {
       width: 100%;
       overflow: hidden;
       background: #fff;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
+      padding: 20px;
       box-sizing: border-box;
       p {
         font-size: 15px;
@@ -169,15 +179,14 @@ export default {
       width: 100%;
       overflow: hidden;
       background: #fff;
-      padding-top: 10px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #eee;
+      padding: 20px;
       box-sizing: border-box;
+      margin-bottom: 10px;
       p {
         width: 100%;
         font-size: 14px;
         color: #999;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
       }
       .details-info-btn {
         width: 100%;
@@ -187,8 +196,7 @@ export default {
         flex-direction: row-reverse;
         margin-top: 20px;
         .detailsbtn {
-          width: 80px;
-          height: 25px;
+          height: 35px;
           letter-spacing: 1px;
           margin-left: 10px;
         }
@@ -197,6 +205,8 @@ export default {
     .refund-details {
       width: 100%;
       overflow: hidden;
+      padding: 20px;
+      box-sizing: border-box;
       background: #fff;
       .refund-details-tit {
         width: 100%;
@@ -211,7 +221,6 @@ export default {
         width: 100%;
         overflow: hidden;
         background: #fff;
-        padding: 5px;
         box-sizing: border-box;
         .shopitems {
           display: flex;
@@ -219,15 +228,12 @@ export default {
           align-items: center;
           overflow: hidden;
           width: 100%;
-          padding: 20px;
           padding-bottom: 10px;
           box-sizing: border-box;
           background: #fff;
           border-radius: 10px;
           margin-bottom: 10px;
           flex-wrap: wrap;
-          box-shadow: 0.133333rem 0.133333rem 0.133333rem #eeee,
-            -0.026667rem -0.026667rem 0.026667rem #eeee;
           .shopitems-right-tit {
             width: 100%;
             background: #fff;
@@ -265,7 +271,8 @@ export default {
               width: 70px;
               height: 70px;
               border: 0px solid #888888;
-              box-shadow: 5px 5px 5px #888888;
+              border-radius: 50%;
+              overflow: hidden;
               img {
                 width: 70px;
                 height: 70px;
@@ -288,7 +295,13 @@ export default {
                 &:nth-of-type(2) {
                   font-size: 15px;
                   font-weight: 100;
-                  margin: 10px 0 10px 0;
+                  margin: 5px 0 2px 0;
+                  color: #8888;
+                  font-family: Microsoft YaHei;
+                }
+                &:nth-of-type(3) {
+                  font-size: 15px;
+                  font-weight: 100;
                   color: #8888;
                   font-family: Microsoft YaHei;
                 }
@@ -296,8 +309,8 @@ export default {
             }
             .shopitems-speci {
               position: absolute;
-              right: -20px;
-              top: 5px;
+              right: 0;
+              top: 0;
               display: flex;
               justify-content: center;
               align-items: center;
@@ -306,7 +319,7 @@ export default {
                 font-size: 15px;
                 font-weight: 100;
                 font-family: Microsoft YaHei;
-                color: red;
+                color: #000;
                 width: 100%;
                 text-align: center;
               }
@@ -363,7 +376,10 @@ export default {
     .shopitems-info {
       width: 100%;
       overflow: hidden;
+      padding: 20px;
       padding-top: 10px;
+      background: #fff;
+      border-top: 1px solid #f5f5f5;
       box-sizing: border-box;
       .shopitems-info-title {
         width: 100%;
@@ -375,7 +391,6 @@ export default {
         }
       }
       .shopitems-info-content-wrap {
-        margin-top: 10px;
         width: 100%;
         overflow: hidden;
         display: flex;
@@ -393,7 +408,8 @@ export default {
                 flex: 2;
               }
               &:nth-of-type(2) {
-                flex: 5;
+                flex: 6;
+                color: #242424;
               }
             }
           }

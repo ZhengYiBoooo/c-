@@ -16,7 +16,7 @@
           <van-field
             v-model="value2"
             clearable
-            placeholder="显示清除图标"
+            placeholder="请输入昵称"
           />
         </van-cell-group>
       </div>
@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       value1: "",
-      value2: "123",
+      value2: "",
     };
   },
   created() {
@@ -48,6 +48,7 @@ export default {
   background: #f6f6f6;
   overflow: hidden;
   padding-top: 46px;
+  box-sizing: border-box;
   .my-home-wrap {
     width: 100%;
     background: #fff;

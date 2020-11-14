@@ -3,12 +3,13 @@
     <!-- 导航栏 -->
     <opInion
       :urls="'Mystyle'"
-      :titleleft="'消息通知'"
+      :titleleft="''"
       :titleright="''"
+      :centertitle="'消息通知'"
     ></opInion>
-
-    <div class="wrap-box">
-      <div class="wrap-box-items">
+    <van-empty description="暂无消息~" v-show="messgelist.length==0" />
+    <div class="wrap-box" v-show="messgelist.length!=0">
+      <!-- <div class="wrap-box-items">
         <div class="wrap-box-items-imgs">
           <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
         </div>
@@ -20,18 +21,29 @@
           <span>2020-11-28</span>
           <span>13:45</span>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 <script>
 import opInion from "../../components/navbar/navbar.vue";
+import { b2endmessage } from "../https/api";
 export default {
   components: {
     opInion,
   },
   data() {
-    return {};
+    return {
+      messgelist: [],
+    };
+  },
+  async created() {
+    let obj = {
+      current: 1,
+      size: 10,
+    };
+    const res = await b2endmessage(obj);
+    this.messgelist = res.data.records;
   },
   methods: {},
 };
@@ -40,7 +52,8 @@ export default {
 .wrap {
   width: 100%;
   overflow: hidden;
-  background: #fff;
+  background: #f6f6f6;
+  height: 100vh;
   padding-top: 46px;
   box-sizing: border-box;
   .wrap-box {
@@ -58,45 +71,45 @@ export default {
       display: flex;
       align-items: center;
       border-bottom: 1px solid #eee;
-      .wrap-box-items-imgs{
-          width: 50px;
-          height: 50px;
-          overflow: hidden;
-          margin-right: 10px;
-          border-radius: 50%;
-          img{
-              width: 100%;
-              height: 100%;
-          }
+      .wrap-box-items-imgs {
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        margin-right: 10px;
+        border-radius: 50%;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
-      .wrap-box-items-text{
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          width: 170px;
-          p{
-              width: 100%;
-              font-size: 13px;
-              &:nth-of-type(1){
-                  font-size: 15px;
-                  font-weight: bold;
-                  margin-bottom: 6px;
-              }
-              &:nth-of-type(2){
-                  color: #999;
-              }
+      .wrap-box-items-text {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        width: 170px;
+        p {
+          width: 100%;
+          font-size: 13px;
+          &:nth-of-type(1) {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 6px;
           }
+          &:nth-of-type(2) {
+            color: #999;
+          }
+        }
       }
-      .wrap-box-items-right{
-          display: flex;
-          justify-content: space-between;
-          span{
-              font-size: 13px;
-                  color: #999;
-                  &:nth-of-type(1){
-                      margin-right:5px;
-                  }
+      .wrap-box-items-right {
+        display: flex;
+        justify-content: space-between;
+        span {
+          font-size: 13px;
+          color: #999;
+          &:nth-of-type(1) {
+            margin-right: 5px;
           }
+        }
       }
     }
   }

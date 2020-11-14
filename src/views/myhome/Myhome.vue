@@ -82,7 +82,6 @@ export default {
     
     afterRead(file) {
       this.scrimg=file.file.name;
-      console.log(file);
     },
     mynames(){
       this.$router.push({

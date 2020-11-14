@@ -134,6 +134,11 @@ const routes = [
     name: 'Mynames',
     component: () => import(/* webpackChunkName: "Mynames" */ '../views/myhome/Mynames.vue')
   },
+  {
+    path: '/paypage',
+    name: 'Paypage',
+    component: () => import(/* webpackChunkName: "Paypage" */ '../views/pay/Paypage.vue')
+  },
 ]
 
 const router = new VueRouter({

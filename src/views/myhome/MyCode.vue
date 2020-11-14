@@ -1,7 +1,7 @@
 <template>
   <div class="myphone">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop">
+    <van-nav-bar left-arrow @click-left="onClickLeft" title="更换手机号" id="addTop">
       <template #left> <van-icon name="arrow-left" size="18" /> </template>
     </van-nav-bar>
 

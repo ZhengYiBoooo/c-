@@ -7,60 +7,61 @@
       :title="items"
       left-arrow
       @click-left="onClickLeft"
-      @click-right="onClickRight"
       :fixed="true"
       :class="boo ? navf : navt"
       ><template #left>
         <van-icon name="arrow-left" size="18" />
       </template>
-      <template #right>
-        <van-icon name="share-o" size="18" />
-      </template>
     </van-nav-bar>
     <!-- 商品轮播图 -->
-    <van-swipe @change="onChange" class="shop-swipe">
-      <van-swipe-item>
-        <img :src="newshoplist.goodsImages" alt="" />
+    <van-swipe
+      @change="onChange"
+      class="shop-swipe"
+      :autoplay="autopa"
+      id="videowrap"
+    >
+      <van-swipe-item v-for="(item, index) in shopmimglist" :key="index">
+        <img :src="item" alt="" />
+        <video
+          :src="item"
+          class="vidw"
+          controls
+          @play="paysd"
+          @pause="pausesd"
+        ></video>
       </van-swipe-item>
-      <van-swipe-item>
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      </van-swipe-item>
-      <van-swipe-item>
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      </van-swipe-item>
-      <van-swipe-item>
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      </van-swipe-item>
+      <!-- <video width=" 100%" height="100%" src="" controls="controls" poster="../../assets/logo.png"> </video> -->
+
       <template #indicator>
-        <div class="custom-indicator">{{ current + 1 }}/4</div>
+        <div class="custom-indicator">{{ current + 1 }}/{{ shoplength }}</div>
       </template>
     </van-swipe>
     <!-- 商品信息 -->
     <!-- goodsOldPrice 货物原价  goodsOldTotal 旧货物合计  goodsQuantity 货物数量  goodsShippingFare 货物运费  goodsCategory 货品类别  supplierStock 供应商库存   -->
     <div class="shop-info">
       <div class="shop-info-left">
-        <p>￥{{ newshoplist.price }}</p>
+        <p>￥{{ newshoplist.price / 1000 }}</p>
         <p>{{ newshoplist.goodsName }}</p>
-        <p>中果 {{ newshoplist.weight }}斤</p>
+        <p>
+          <span>{{ newshoplist.weight }}</span>
+        </p>
       </div>
       <div class="shop-info-right">
-        <p>已售：{{ newshoplist.goodsOldTotal - newshoplist.goodsQuantity }}</p>
-        <p>运费：{{ newshoplist.goodsShippingFare }}元</p>
+        <p>已售：{{ newshoplist.sales }}</p>
       </div>
     </div>
     <!-- 送货时长 -->
     <div class="shop-info-time">
-      <span>V24小时发货</span>
-      <span>V隔日达</span>
+      <span v-for="(item, index) in servlist" :key="index">{{ item }}</span>
     </div>
     <!-- 商家店铺跳转 -->
     <div class="shop-info-name">
       <div class="shop-info-name-img">
-        <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+        <img :src="userinfolist.logo" alt="" />
       </div>
       <div class="shop-info-name-box">
-        <p>噼里啪啦官方旗舰店</p>
-        <p>商品 74</p>
+        <p>{{ userinfolist.shopName }}</p>
+        <p>商品 {{ userinfolist.stock }}</p>
       </div>
     </div>
     <!-- 分享 -->
@@ -69,29 +70,29 @@
       title="立即分享给好友"
       :options="options"
     />
+    
     <!-- 购物车 -->
     <van-goods-action>
-      <van-goods-action-icon icon="chat-o" text="客服" @click="onClickIcon" />
       <van-goods-action-icon icon="cart-o" text="购物车" @click="onClickIcon" />
 
-      <van-goods-action-button color="#01B44A" type="danger" text="立即购买" />
+      <van-goods-action-button
+        color="#01B44A"
+        type="danger"
+        text="加入购物车"
+        @click="joincar"
+      />
     </van-goods-action>
+
     <!-- 商品详情图片富文本 -->
-    <div class="shop-img-info">
-      <iframe src="//player.bilibili.com/player.html?aid=287448006&bvid=BV1vf4y1B7nH&cid=246089163&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-      <video src="https://www.bilibili.com/video/BV1vf4y1B7nH/" controls="controls"></video>
-      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
-      <img src="https://img.yzcdn.cn/vant/cat.jpeg" alt="" />
+    <div class="shop-img-info" v-for="(item, index) in fuwenben" :key="index">
+      <img :src="item" alt="" />
     </div>
   </div>
 </template>
 <script>
 import { Toast } from "vant";
 var navtap = document.querySelector(".nvbar");
-import { listshopinfo } from "../https/api";
+import { listshopinfo, userinfo ,usercarsave} from "../https/api";
 export default {
   data() {
     return {
@@ -108,21 +109,39 @@ export default {
           { name: "二维码", icon: "qrcode" },
         ],
       ],
+      showvideo: true,
       i: 0,
       current: 0,
       boo: false,
       navf: "navfff",
       navt: "navtran",
       items: "",
-      infoid: "",
+      fod: {
+        id: "",
+      },
       newshoplist: {},
+      fuwenben: [],
+      shopmimglist: [],
+      shoplength: "",
+      serverid: {
+        id: "1123598821738675203",
+      },
+      userinfolist: {},
+      servlist: [],
+      videurl: "",
+      autopa: 3000,
+      shopinf:{
+        goodsId:''
+      }
     };
   },
   created() {
-    this.infoid = this.$route.query.re;
+    this.fod.id = this.$route.query.re;
     this.listshopinfo();
+    this.userinfo();
   },
   methods: {
+    
     onClickLeft() {
       this.$router.go(-1);
     },
@@ -135,7 +154,9 @@ export default {
     },
 
     onClickIcon() {
-      Toast("点击图标");
+      this.$router.push({
+        name:'Shopcar'
+      })
     },
     handleScroll() {
       // 页面滚动距顶部距离
@@ -153,12 +174,69 @@ export default {
         this.items = this.newshoplist.goodsName;
       }
     },
-
-    async listshopinfo() {
-      const res = await listshopinfo(this.infoid);
-      this.newshoplist = res.data;
-      console.log(this.newshoplist);
+    async userinfo() {
+      const res = await userinfo(this.serverid);
+      this.userinfolist = res.data;
     },
+    async listshopinfo() {
+      const res = await listshopinfo(this.fod);
+      this.newshoplist = res.data;
+      this.videurl = res.data.videoUrl;
+      this.fuwenben = this.newshoplist.content.split(",");
+      if (this.newshoplist.goodsImages.indexOf(",") == -1) {
+        this.shopmimglist.push(this.newshoplist.goodsImages);
+        if (res.data.videoUrl == "") {
+        } else {
+          this.shopmimglist.unshift(res.data.videoUrl);
+        }
+      } else {
+        this.shopmimglist = this.newshoplist.goodsImages.split(",");
+        if (res.data.videoUrl == "") {
+        } else {
+          this.shopmimglist.unshift(res.data.videoUrl);
+        }
+      }
+      this.shoplength = this.shopmimglist.length;
+      this.servlist = this.newshoplist.service.split(",");
+      this.shopinf.goodsId=this.newshoplist.goodsId;
+    },
+    handlePlayVideo(is_media, idx, jumpData) {
+      // 若是视handlePlayVideo频，且视频地址存在，点击播放
+      if (is_media == 1 && jumpData.value) {
+        let c_video_box = document.getElementById("video-box_" + idx);
+        let c_video = document.getElementById("video_" + idx);
+        // console.log('当前视频',c_video);
+        c_video_box.style.zIndex = 5;
+        this.curLunboIdx = idx;
+        if (c_video) {
+          c_video.play();
+        }
+      }
+      //否则是图片，存在jumpData就跳转
+      if (is_media == 0 && jumpData) {
+        this.toJump(jumpData);
+      }
+    },
+    paysd() {
+      this.autopa = 0;
+    },
+    pausesd() {
+      let timer=null;
+      var that=this;
+      timer=setTimeout(function () {
+        that.autopa = 3000;
+      }, 1000);
+    },
+    joincar(){
+      this.usercarsave(this.shopinf);
+    },
+    async usercarsave(e){
+      const res=await usercarsave(e);
+      Toast.success({
+        message:'成功添加购物车',
+        duration:500
+      });
+    }
   },
   mounted() {
     window.addEventListener("scroll", this.handleScroll, true);
@@ -175,12 +253,20 @@ export default {
   background: rgba(0, 0, 0, 0.1);
 }
 .shop-swipe {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
   img {
     width: 100%;
+  }
+  .vidw {
+    width: 100%;
+    height: 100%;
   }
 }
 #wrap {
   background: #f6f6f6;
+  position: relative;
   #nvbar {
     &::after {
       position: absolute;
@@ -214,7 +300,6 @@ export default {
   box-sizing: border-box;
   display: flex;
   justify-content: space-between;
-  align-items: center;
   background: #fff;
   .shop-info-left {
     p {
@@ -230,6 +315,11 @@ export default {
       &:nth-of-type(3) {
         font-size: 10px;
         color: #667;
+        span {
+          &:nth-of-type(1) {
+            margin-right: 20px;
+          }
+        }
       }
     }
   }
@@ -238,11 +328,6 @@ export default {
       &:nth-of-type(1) {
         font-size: 10px;
         color: #667;
-      }
-      &:nth-of-type(2) {
-        font-size: 10px;
-        color: #667;
-        margin: 20px 0 0 0;
       }
     }
   }
@@ -300,5 +385,14 @@ export default {
   img {
     width: 100%;
   }
+}
+.vide {
+  width: 100%;
+  height: 200px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  background: #fff;
 }
 </style>

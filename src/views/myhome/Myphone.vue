@@ -1,18 +1,15 @@
 <template>
   <div class="myphone">
     <!-- 导航栏 -->
-    
-      <opInion :urls="'Myhome'" :titleleft="''" :titleright="''"></opInion>
-    
+
+    <opInion :urls="'Myhome'" :titleleft="''" :titleright="''" :centertitle="'更换手机号'"></opInion>
 
     <!-- 手机验证码 -->
     <div class="my-phone-wrap">
       <p>请输入原手机号</p>
       <p>通过安全环境检测可以换绑</p>
       <div class="verification-wrap">
-        <van-dropdown-menu class="verification-num">
-          <van-dropdown-item v-model="value1" :options="option1" />
-        </van-dropdown-menu>
+        <img class="verification-num" src="../../assets/phonelogo.png" alt="">
         <input
           type="text"
           v-model="phoneValue"
@@ -37,11 +34,11 @@
 <script>
 import { Toast } from "vant";
 import { Notify } from "vant";
-import opInion from '../../components/navbar/navbar.vue' 
+import opInion from "../../components/navbar/navbar.vue";
 export default {
-    components:{
-        opInion
-    },
+  components: {
+    opInion,
+  },
   data() {
     return {
       phone: "",
@@ -75,11 +72,11 @@ export default {
         Notify({ type: "danger", message: "请输入正确手机号码" });
       }
     },
-    mycode(){
-        this.$router.push({
-            name:'MyCode'
-        })
-    }
+    mycode() {
+      this.$router.push({
+        name: "MyCode",
+      });
+    },
   },
 };
 </script>
@@ -111,22 +108,26 @@ export default {
     }
     .verification-wrap {
       width: 100%;
+      height: 50px;
+      margin-top: 40px;
       overflow: hidden;
       display: flex;
       justify-content: space-between;
-      background: #eee;
       overflow: hidden;
-      border: 1px solid #eee;
+      border: none;
+      border-bottom: 1px solid #eee;
+      align-items: center;
       .verification-num {
-        background: #eee;
-        width: 65px;
+        background: #fff;
+        width: 15px;
+        height: 20px;
       }
       .verification-phone {
         width: 100%;
         border: none;
-        background: #eee;
-        color: #333;
+        background: #fff;
         font-size: 16px;
+        border: none;
         padding-left: 10px;
         box-sizing: border-box;
       }

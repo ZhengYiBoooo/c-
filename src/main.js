@@ -51,8 +51,15 @@ import { Uploader } from 'vant';
 import { Step, Steps } from 'vant';
 import { Empty } from 'vant';
 
+import VueClipboard from 'vue-clipboard2'
 import axios from 'axios';
 Vue.prototype.axios = axios;
+import { Stepper } from 'vant';
+import $ from 'jquery'
+
+
+Vue.use(Stepper);
+Vue.use(VueClipboard);
 Vue.use(Empty);
 Vue.use(Step);
 Vue.use(Steps);

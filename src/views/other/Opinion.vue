@@ -1,17 +1,22 @@
 <template>
   <div class="opinion">
     <!-- 导航栏 -->
-    <van-nav-bar left-arrow @click-left="onClickLeft" id="addTop">
+    <van-nav-bar
+      left-arrow
+      @click-left="onClickLeft"
+      id="addTop"
+      title="意见反馈"
+    >
       <template #left>
         <van-icon name="arrow-left" size="18" />
-        <span>意见反馈</span>
       </template>
     </van-nav-bar>
+
     <div class="opinion-wrap">
       <div class="contact-wrap-body-text">
-        <p>请输入您要反馈的内容</p>
+        <p>请输入您要反馈的问题：</p>
         <textarea class="contact-wrap-body-ipt" v-model="message"></textarea>
-        <button class="contact-btn" @click="contactbtn">确定提交</button>
+        <van-button type="primary" size="large" round>确定提交</van-button>
       </div>
     </div>
   </div>
@@ -20,10 +25,10 @@
 import { Dialog } from "vant";
 import { Toast } from "vant";
 export default {
-  data(){
+  data() {
     return {
-      message:''
-    }
+      message: "",
+    };
   },
   methods: {
     onClickLeft() {
@@ -42,6 +47,30 @@ export default {
           Toast.fail("提交失败");
         });
     },
+  },
+  contactbtn() {
+    if (this.phones.length == 10) {
+      Dialog.confirm({
+        message: "您确定要提交该咨询的问题吗",
+      })
+        .then(() => {
+          let obj = {
+            phone: this.phones,
+            userId: this.$store.state.usrseid,
+            content: this.message,
+          };
+          this.zixuninfo(obj);
+          this.$router.push({
+            name: "Mystyle",
+          });
+          Toast.success("提交成功");
+        })
+        .catch(() => {
+          Toast.fail("提交失败");
+        });
+    } else {
+      Toast.fail("手机号格式不正确");
+    }
   },
 };
 </script>
@@ -101,8 +130,10 @@ export default {
       }
       .contact-wrap-body-ipt {
         width: 99%;
-        height: 230px;
+        height: 200px;
         margin-top: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #eee;
       }
       .contact-btn {
         color: #fff;
