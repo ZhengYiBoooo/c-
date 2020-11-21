@@ -12,7 +12,6 @@
       v-model="show"
       round
       position="bottom"
-      :style="{ height: '30%' }"
       @close="porpo"
     >
       <div class="paywrap">
@@ -42,11 +41,38 @@
             @change="clssa((paylist = 2))"
           />
         </div>
+
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/zfbpay.jpg" alt="" />
+            <p>第三方支付宝支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 5))"
+          />
+        </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/wxpay.png" alt="" />
+            <p>第三方微信支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 6))"
+          />
+        </div>
         <van-button
           type="primary"
           size="large"
           @click="showPopup"
-          :disabled="paylist != 2 && paylist != 1"
+          :disabled="paylist != 2 && paylist != 1&&paylist != 5&&paylist != 6"
           >立即支付</van-button
         >
       </div>
@@ -60,7 +86,7 @@
       <div class="wait-wrap" v-show="active == 1 || infomaster.status == 1">
         <p>等待买家付款</p>
         <p>30分钟内未支付订单自动取消</p>
-        
+
         <div class="shopitems-bottom">
           <van-button
             type="primary"
@@ -239,7 +265,7 @@ export default {
 
       paylist: "",
       mainid: "",
-      rocallTime:''
+      rocallTime: "",
     };
   },
   async created() {
@@ -295,12 +321,18 @@ export default {
       this.statusls = "退款完成";
     }
 
-    
-    let dtsad=new Date();
-    let yy=[dtsad.getFullYear(),dtsad.getMonth()+1,dtsad.getDate()];
-    let bb=[dtsad.getHours(),dtsad.getMinutes(),dtsad.getSeconds()];
-    let YMCA=[yy.join('-'),bb.join(':')].join(' ');
-    this.ComputetTime(YMCA,this.infomaster.createTime);
+    if (this.infomaster.status == 10) {
+      this.statusls = "售后驳回";
+    }
+    if (this.infomaster.status == 11) {
+      this.statusls = "取消通过退款中";
+    }
+
+    let dtsad = new Date();
+    let yy = [dtsad.getFullYear(), dtsad.getMonth() + 1, dtsad.getDate()];
+    let bb = [dtsad.getHours(), dtsad.getMinutes(), dtsad.getSeconds()];
+    let YMCA = [yy.join("-"), bb.join(":")].join(" ");
+    this.ComputetTime(YMCA, this.infomaster.createTime);
   },
   methods: {
     onClickLeft() {
@@ -395,7 +427,7 @@ export default {
       });
     },
 
-    ComputetTime(data,dataws) {
+    ComputetTime(data, dataws) {
       let st = data.replace(/\-/g, "/"), //当前服务器时间
         ct = dataws.replace(/\-/g, "/"); //创建订单时间
       let ts = new Date(st).getTime(),

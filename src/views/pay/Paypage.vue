@@ -6,12 +6,25 @@
       :titleright="''"
       :centertitle="'支付'"
     ></opInion>
-
-    <div class="qrcode" ref="qrCodeUrl"></div>
-    <div v-html="zhifubao" style="height: 100px" class="bodys">
-      {{ zhifubao }}
+    <div v-show="padyUrl != ''">
+      <div class="qrcode" ref="qrCodeUrl"></div>
+    </div>
+    <div
+      v-html="zhifubao"
+      style="height: 100px"
+      class="bodys"
+      v-show="padyUrl != ''"
+    >
+      <!-- {{ zhifubao }} -->
     </div>
     <!-- <button @click="dias">点击跳转</button> -->
+
+    <iframe
+      :src="padyUrl"
+      frameborder="0"
+      class="ifms"
+      v-show="padyUrl == ''"
+    ></iframe>
   </div>
 </template>
 
@@ -35,6 +48,8 @@ export default {
       zhifubao: "",
       cuo: "",
       smallPro: "",
+      paymoe: "",
+      padyUrl: "",
     };
   },
   created() {
@@ -42,45 +57,45 @@ export default {
     if (this.$route.query.es == undefined) {
     } else {
       if (this.$route.query.es.charAt(0) == "w") {
+        this.padyUrl='';
         this.usermain = this.$route.query.es;
+        console.log(this.usermain);
+        console.log(this.padyUrl);
       }
       if (this.$route.query.es.charAt(0) == "<") {
+        this.padyUrl='';
         this.zhifubao = this.$route.query.es;
-        let ab = this.zhifubao.substr(this.zhifubao.indexOf("<script"));
-        this.zhifubao = this.zhifubao.replace(ab, "");
+        // let ab = this.zhifubao.substr(this.zhifubao.indexOf("<script"));
+        // this.zhifubao = this.zhifubao.replace(ab, "");
       } else {
-        this.cuo = this.$route.query.es;
-        console.log(this.cuo);
+        this.padyUrl = this.$route.query.es;
         // window.open(this.cuo,'_self');
       }
     }
     let as = abc.substr(abc.indexOf("<world"));
 
-    clearInterval(timer);
-    var that = this;
+    // clearInterval(timer);
+    // var that = this;
 
-    var timer = null;
-    timer = setInterval(function () {
-      let obj = {
-        id: that.$route.query.idp,
-      };
-      b2expinfolist(obj).then((res) => {
-        if (res.code == 200) {
-          console.log(res.data.status);
-          if (res.data.status != 1) {
-            clearInterval(timer);
-            that.$router.push({
-              name: "Oderall",
-            });
-          }
-        }
-      });
-    }, 3000);
+    // var timer = null;
+    // timer = setInterval(function () {
+    //   let obj = {
+    //     id: that.$route.query.idp,
+    //   };
+    //   b2expinfolist(obj).then((res) => {
+    //     if (res.code == 200) {
+    //       console.log(res.data.status);
+    //       if (res.data.status != 1) {
+    //         clearInterval(timer);
+    //         that.$router.push({
+    //           name: "Oderall",
+    //         });
+    //       }
+    //     }
+    //   });
+    // }, 3000);
   },
   methods: {
-    asdasd() {
-      window.location.href = "weixin://wxpay/bizpayurl?pr=eJj8Fmf00";
-    },
     creatQrCode() {
       var qrcode = new QRCode(this.$refs.qrCodeUrl, {
         text: this.usermain, // 需要转换为二维码的内容
@@ -99,6 +114,11 @@ export default {
   },
   mounted() {
     this.creatQrCode();
+    if (document.forms[0] != undefined) {
+      this.$nextTick(() => {
+        document.forms[0].submit(); //这里就是获取第一个表单并提交
+      });
+    }
   },
 };
 </script>
@@ -136,6 +156,14 @@ export default {
   }
   script {
     display: none;
+  }
+}
+
+.ifms {
+  width: 100%;
+  height: 100vh;
+  #page {
+    background: red;
   }
 }
 </style>

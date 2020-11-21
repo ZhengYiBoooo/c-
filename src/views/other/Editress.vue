@@ -221,8 +221,16 @@ export default {
                   let yyy = ress.data.records.filter((item) => {
                     return item.isDefault == 1;
                   });
+                  console.log(yyy, "yyyyyyyyyyyyyyyyyyyyyyyyy");
                   userexpsuinfos2(obj).then((v) => {
-                    that.$store.commit("changeaddress", JSON.stringify(v.data));
+                    if (yyy == "") {
+                      that.$store.commit(
+                        "changeaddress",
+                        JSON.stringify(v.data)
+                      );
+                    } else {
+                      that.$store.commit("changeaddress", JSON.stringify(yyy[0]));
+                    }
                     if (v.code == 200) {
                       this.$router.push({
                         name: "Receive",
@@ -261,17 +269,22 @@ export default {
                   };
                   var that = this;
                   userexpsuinfos2(obj).then((res) => {
-                    this.$store.commit(
-                      "changeaddress",
-                      JSON.stringify(res.data)
-                    );
-
+                    let yyy = ress.data.records.filter((item) => {
+                      return item.isDefault == 1;
+                    });
+                    if (yyy == "") {
+                      this.$store.commit(
+                        "changeaddress",
+                        JSON.stringify(res.data)
+                      );
+                    } else {
+                      that.$store.commit("changeaddress", JSON.stringify(yyy[0]));
+                    }
                     if (res.code == 200) {
                       this.$router.push({
                         name: "Receive",
                       });
                     }
-                    
                   });
                 } else {
                   this.$router.push({
@@ -312,10 +325,17 @@ export default {
                   };
                   var that = this;
                   userexpsuinfos2(obj).then((res) => {
-                    that.$store.commit(
-                      "changeaddress",
-                      JSON.stringify(res.data)
-                    );
+                    let yyy = ress.data.records.filter((item) => {
+                      return item.isDefault == 1;
+                    });
+                    if (yyy == "") {
+                      that.$store.commit(
+                        "changeaddress",
+                        JSON.stringify(res.data)
+                      );
+                    } else {
+                      that.$store.commit("changeaddress", JSON.stringify(yyy[0]));
+                    }
                     if (res.code == 200) {
                       this.$router.push({
                         name: "Receive",

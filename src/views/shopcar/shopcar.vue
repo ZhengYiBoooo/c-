@@ -158,6 +158,10 @@
         >全选</van-checkbox
       >
     </van-submit-bar>
+
+    <!-- <iframe src="" frameborder="0"></iframe> -->
+    <!-- <button @click="popopo=true">点击</button>
+    <iframe src="https://www.baidu.com" frameborder="0" class="ifms" v-show="popopo==true"></iframe> -->
   </div>
 </template>
 <script>
@@ -186,6 +190,7 @@ export default {
       show: false,
       demo: "",
       sss: 0,
+      popopo: false,
       numsr: [],
       shopca: [],
       shopacrsave: {
@@ -364,7 +369,22 @@ export default {
     },
     usercarlists() {
       usercarlist().then((res) => {
-        this.shopcas = res.data;
+        this.shopca = res.data;
+        let sheng = this.shopca.filter((item) => {
+          return (
+            item.servicerStatus == 2 &&
+            item.goodsCount <= item.servicerStock &&
+            item.goodsCount <= item.supplierStock &&
+            item.supplierStock != 0 &&
+            item.servicerStock != 0
+          );
+        });
+        if (sheng.length <= 0) {
+          console.log(this.shopsdstatus);
+          this.shopsdstatus = true;
+        } else {
+          this.shopsdstatus = false;
+        }
       });
       // const res = await usercarlist();
       // this.shopca = res.data;
@@ -475,6 +495,9 @@ export default {
       });
     },
     // item.goodsCount == 1 ? (item.goodsCount = 1) : item.goodsCount--
+    btnyyy() {
+      window.open("https://www.baidu.com", "_self");
+    },
   },
   computed: {
     totalPrice: function () {
@@ -771,6 +794,13 @@ export default {
     height: 40px;
     border: none;
     border-bottom: 1px solid #03b64c;
+  }
+}
+.ifms {
+  width: 100%;
+  height: 100vh;
+  #page {
+    background: red;
   }
 }
 </style>

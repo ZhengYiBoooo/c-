@@ -12,7 +12,7 @@
         <div class="Logistics-shop-img-wrap">
           <van-image
             round
-            src="https://img.yzcdn.cn/vant/cat.jpeg"
+            :src="listinfo.goods.goodsImages"
             class="shopitems-img"
           />
         </div>
@@ -34,8 +34,8 @@
             v-for="(item, index) in shippingT"
             :key="index"
           >
-            <h3>{{item}}</h3>
-            <p>10-1512:40</p>
+            <!-- <h3></h3> -->
+            <p>{{item}}</p>
           </van-step>
         </van-steps>
       </div>

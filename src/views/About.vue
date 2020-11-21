@@ -32,62 +32,64 @@
       </div>
     </div>
     <!-- 侧栏分类商品 -->
-    <div
-      class="shop-list-right"
-      @touchstart="touchStart($event)"
-      @touchend="touchEnd($event)"
-    >
-      <div class="classs" style="overflow-y: auto">
-        <van-sidebar v-model="active" @change="inde(active)">
-          <van-sidebar-item
-            :title="item.name"
-            v-for="(item, index) in newusershoplist"
-            :key="index"
-            @click="clickindex(item)"
-          />
-        </van-sidebar>
-      </div>
+    <keep-alive>
+      <div
+        class="shop-list-right"
+        @touchstart="touchStart($event)"
+        @touchend="touchEnd($event)"
+      >
+        <div class="classs" style="overflow-y: auto">
+          <van-sidebar v-model="active" @change="inde(active)">
+            <van-sidebar-item
+              :title="item.name"
+              v-for="(item, index) in newusershoplist"
+              :key="index"
+              @click="clickindex(item)"
+            />
+          </van-sidebar>
+        </div>
 
-      <div class="shop-list-right-wrap">
-        <div class="tree-shop-wrap">
-          <div class="tree-select-tit">
-            <p>{{ titlename }}</p>
-          </div>
-          <div
-            class="tree-select-items"
-            v-for="(item, index) in tableData"
-            :key="index"
-          >
-            <div class="tree-select-items-img" @click="shop(item.id)">
-              <img :src="item.thumbnail" alt="" />
-            </div>
-            <div class="tree-select-items-content">
-              <p>{{ item.goodsName }}</p>
-              <p>{{ item.weight }}</p>
-              <p>￥{{ item.price / 1000 }}</p>
+        <div class="shop-list-right-wrap">
+          <div class="tree-shop-wrap">
+            <div class="tree-select-tit">
+              <p>{{ titlename }}</p>
             </div>
             <div
-              class="shoppay"
-              @click="addcar(item)"
-              v-show="item.goodsCount < 1"
+              class="tree-select-items"
+              v-for="(item, index) in tableData"
+              :key="index"
             >
-              <van-icon name="shopping-cart-o" color="#fff" :badge="badges" />
+              <div class="tree-select-items-img" @click="shop(item.id)">
+                <img :src="item.thumbnail" alt="" />
+              </div>
+              <div class="tree-select-items-content">
+                <p>{{ item.goodsName }}</p>
+                <p>{{ item.weight }}</p>
+                <p>￥{{ item.price / 1000 }}</p>
+              </div>
+              <div
+                class="shoppay"
+                @click="addcar(item)"
+                v-show="item.goodsCount < 1"
+              >
+                <van-icon name="shopping-cart-o" color="#fff" :badge="badges" />
+              </div>
+              <van-stepper
+                class="goodsCo"
+                :min="0"
+                v-model="item.goodsCount"
+                v-show="item.goodsCount >= 1"
+                theme="round"
+                button-size="22"
+                disable-input
+                @minus="jianshop(item)"
+                @plus="jiashop(item)"
+              />
             </div>
-            <van-stepper
-              class="goodsCo"
-              :min="0"
-              v-model="item.goodsCount"
-              v-show="item.goodsCount >= 1"
-              theme="round"
-              button-size="22"
-              disable-input
-              @minus="jianshop(item)"
-              @plus="jiashop(item)"
-            />
           </div>
         </div>
       </div>
-    </div>
+    </keep-alive>
   </div>
 </template>
 <script>

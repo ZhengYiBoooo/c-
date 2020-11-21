@@ -337,7 +337,6 @@ export default {
   margin: 10px 0 10px 0;
   padding: 10px;
   box-sizing: border-box;
-  border-bottom: 1px solid #dedede;
   display: flex;
   align-items: center;
   background: #fff;

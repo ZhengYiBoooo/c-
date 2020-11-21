@@ -21,14 +21,15 @@ module.exports = {
         port:8080,
         // target:'http://192.168.0.3',
         target: 'http://47.108.68.7:9200',//后端的接口地址
+        // target: 'http://192.168.0.50:9200',//后端的接口地址
         changeOrigin: true, //开启跨域
         pathRewrite: {
           '^/api': '',//这里即为重写后的地址，baseURL里的地址要换成这个
         },
       },
-      'qqq':{
-        target: 'weixin://wxpay/bizpayurl?pr=eJj8Fmf00',//后端的接口地址
-      }
+      // 'qqq':{
+      //   target: 'weixin://wxpay/bizpayurl?pr=eJj8Fmf00',//后端的接口地址
+      // }
     }
   },
   configureWebpack: {

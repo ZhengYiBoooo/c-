@@ -31,7 +31,7 @@
           <p>请输入您想咨询的问题：</p>
           <textarea class="contact-wrap-body-ipt" v-model="message"></textarea>
           <p class="contact-wrap-bo">我们将于24小时内与您致电,请保持手机畅通。</p>
-          <van-button type="primary" size="large" round @click="contactbtn">提交</van-button>
+          <van-button type="primary" size="large" round @click="contactbtn" :disabled="phones==''||message==''">提交</van-button>
         </div>
       </div>
     </div>

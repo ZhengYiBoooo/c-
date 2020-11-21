@@ -11,13 +11,7 @@
       </template>
     </van-nav-bar>
 
-    <van-popup
-      v-model="show"
-      round
-      position="bottom"
-      :style="{ height: '30%' }"
-      @close="porpo"
-    >
+    <van-popup v-model="show" round position="bottom" @close="porpo">
       <div class="paywrap">
         <div class="payitems">
           <div class="payitems-left">
@@ -45,17 +39,45 @@
             @change="clssa((paylist = 2))"
           />
         </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/zfbpay.jpg" alt="" />
+            <p>第三方支付宝支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 5))"
+          />
+        </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/wxpay.png" alt="" />
+            <p>第三方微信支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 6))"
+          />
+        </div>
         <van-button
           type="primary"
           size="large"
           @click="showPopup"
-          :disabled="paylist != 2 && paylist != 1"
+          :disabled="
+            paylist != 2 && paylist != 1 && paylist != 5 && paylist != 6
+          "
           >立即支付</van-button
         >
       </div>
     </van-popup>
     <!-- 提交订单 -->
-    <div class="Totalprice">
+    <div class="Totalprice" v-show="padyUrl == '' ? true : false">
       <p>
         <span>商品金额</span><span>￥{{ (numsum / 1000).toFixed(2) }}</span>
       </p>
@@ -77,13 +99,15 @@
           >实付
           <span
             >￥{{
-              goodsfree == 0 ? numsum / 1000 : numsum / 1000 + goodsfree
+              goodsfree == 0
+                ? (numsum / 1000).toFixed(2)
+                : (numsum / 1000 + goodsfree).toFixed(2)
             }}</span
           ></span
         >
       </div>
     </div>
-    <div class="wrap">
+    <div class="wrap" v-show="padyUrl == '' ? true : false">
       <!-- 订单中心 -->
       <div class="add-body">
         <!-- 订单地址选项 -->
@@ -179,6 +203,7 @@ export default {
       shopaddlist: [],
       newshoplist: [],
       addaress: [],
+      padyUrl: "",
       goodfree: {
         ids: "",
         countryId: "",
@@ -198,6 +223,12 @@ export default {
   created() {
     this.userexpress();
     this.maplist = maps;
+    let yysd=JSON.parse(this.$store.state.addresslist);
+    // console.log(isNaN(
+    //     parseFloat(JSON.parse(this.$store.state.addresslist)[0].shippingCountryId)
+    //   ),
+    //   "22222222222222222222222222222222"
+    // );
     this.newshoplist = JSON.parse(this.$store.state.shopcar);
     let statusId = [];
     this.newshoplist.map((item) => {
@@ -205,37 +236,37 @@ export default {
     });
     statusId = statusId.join(",");
     this.goodfree.ids = statusId;
-    if (this.$store.state.addresslist.length == 0) {
-    } else {
-      if (
-        isNaN(
-          parseFloat(
-            JSON.parse(this.$store.state.addresslist).shippingCountryId
-          )
-        ) == false
-      ) {
-        this.newlsitfshop = JSON.parse(this.$store.state.addresslist);
-        this.newlsitfshop.shippingProvinceId = this.maplist.province_list[
-          this.newlsitfshop.shippingProvinceId + "0000"
-        ];
-        this.newlsitfshop.shippingCityId = this.maplist.city_list[
-          this.newlsitfshop.shippingCityId + "00"
-        ];
 
-        this.newlsitfshop.shippingCountryId = this.maplist.county_list[
-          this.newlsitfshop.shippingCountryId
-        ];
-      } else {
-        this.newlsitfshop = JSON.parse(this.$store.state.addresslist);
-      }
+
+    if (
+      isNaN(
+        parseFloat(JSON.parse(this.$store.state.addresslist).shippingCountryId)
+      ) == false
+    ) {
+      this.newlsitfshop = JSON.parse(this.$store.state.addresslist);
+      console.log(this.newlsitfshop, "33333333333333");
+      this.newlsitfshop.shippingProvinceId = this.maplist.province_list[
+        this.newlsitfshop.shippingProvinceId + "0000"
+      ];
+      this.newlsitfshop.shippingCityId = this.maplist.city_list[
+        this.newlsitfshop.shippingCityId + "00"
+      ];
+
+      this.newlsitfshop.shippingCountryId = this.maplist.county_list[
+        this.newlsitfshop.shippingCountryId
+      ];
+    } else {
+      this.newlsitfshop = JSON.parse(this.$store.state.addresslist);
+      console.log(this.newlsitfshop,'ppppppppppppppppp')
     }
+
     if (this.$store.state.addresslist.length != 0) {
       let sdobhs = {
         id: JSON.parse(this.$store.state.addresslist).id,
       };
       if (sdobhs.id != undefined && this.$store.state.addresslist != "") {
         userexpsuinfos2(sdobhs).then((res) => {
-          this.goodfree.countryId = res.data.shippingCountryId;
+          this.goodfree.countryId = res.data.shippingProvinceId;
           shopcarfree(this.goodfree).then((ress) => {
             this.goodsfree = ress.data.fee / 1000;
           });
@@ -292,11 +323,15 @@ export default {
       };
       b2bordersubmit(b2bord).then((res) => {
         if (res.code == 200) {
-          this.payurls = res.data.payUrl;
+          console.log(res, "dingdan");
+          // this.payurls = res.data.payUrl;
+          this.padyUrl = res.data.payUrl;
+          // window.open(this.payurls,'_self');
           this.$router.push({
-            name: "Oderall",
+            name: "Paypage",
             query: {
-              es: this.payurls,
+              es: this.padyUrl,
+              idp: res.data.shopId,
             },
           });
           Toast({
@@ -304,8 +339,7 @@ export default {
             duration: 500,
             position: "bottom",
           });
-        }else{
-          
+        } else {
           Toast({
             message: res.msg,
             duration: 1000,
@@ -333,7 +367,6 @@ export default {
         return item.isDefault == 1;
       });
       this.ssssss = sss[0];
-      console.log(this.ssssss);
       if (this.$store.state.addressId == "") {
         this.lisdadwq = res.data.records[res.data.records.length - 1];
       } else {
@@ -704,6 +737,14 @@ export default {
       width: 15px;
       height: 15px;
     }
+  }
+}
+
+.ifms {
+  width: 100%;
+  height: 100vh;
+  #page {
+    background: red;
   }
 }
 </style>

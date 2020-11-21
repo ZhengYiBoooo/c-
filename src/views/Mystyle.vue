@@ -45,7 +45,7 @@
               <img src="../assets/waitrefund.png" alt="" />
               <!-- <van-icon name="qr" /> -->
             </div>
-            <p>退款/售后</p>
+            <p>售后</p>
           </div>
         </div>
       </div>
@@ -201,6 +201,8 @@ export default {
           }
         }
         p {
+          width: 100%;
+          text-align: center;
           font-size: 14px;
           margin-top: 10px;
           color: #717171;

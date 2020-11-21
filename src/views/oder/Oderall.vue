@@ -9,13 +9,7 @@
       :centertitle="'我的订单'"
     ></opInion>
 
-    <van-popup
-      v-model="show"
-      round
-      position="bottom"
-      :style="{ height: '30%' }"
-      @close="porpo"
-    >
+    <van-popup v-model="show" round position="bottom" @close="porpo">
       <div class="paywrap">
         <div class="payitems">
           <div class="payitems-left">
@@ -43,11 +37,40 @@
             @change="clssa((paylist = 2))"
           />
         </div>
+
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/zfbpay.jpg" alt="" />
+            <p>第三方支付宝支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 5))"
+          />
+        </div>
+        <div class="payitems">
+          <div class="payitems-left">
+            <img src="../../assets/wxpay.png" alt="" />
+            <p>第三方微信支付</p>
+          </div>
+          <input
+            type="radio"
+            class="payitems-rad"
+            name="language"
+            :value="paylist"
+            @change="clssa((paylist = 6))"
+          />
+        </div>
         <van-button
           type="primary"
           size="large"
           @click="showPopup"
-          :disabled="paylist != 2 && paylist != 1"
+          :disabled="
+            paylist != 2 && paylist != 1 && paylist != 5 && paylist != 6
+          "
           >立即支付</van-button
         >
       </div>
@@ -231,7 +254,7 @@ export default {
       paylist: "",
       mainid: "",
       payurls: "",
-      bonumboo:''
+      bonumboo: "",
     };
   },
   async created() {
@@ -273,6 +296,12 @@ export default {
       }
       if (this.newshoplist[i].status == 9) {
         this.newshoplist[i].statuslsss = "退款完成";
+      }
+      if (this.newshoplist[i].status == 10) {
+        this.newshoplist[i].statuslsss = "售后驳回";
+      }
+      if (this.newshoplist[i].status == 11) {
+        this.newshoplist[i].statuslsss = "取消通过退款中";
       }
     }
 
@@ -335,6 +364,12 @@ export default {
             }
             if (this.newshoplist[i].status == 9) {
               this.newshoplist[i].statuslsss = "退款完成";
+            }
+            if (this.newshoplist[i].status == 10) {
+              this.newshoplist[i].statuslsss = "售后驳回";
+            }
+            if (this.newshoplist[i].status == 11) {
+              this.newshoplist[i].statuslsss = "取消通过退款中";
             }
           }
         });
@@ -716,5 +751,10 @@ export default {
       height: 15px;
     }
   }
+}
+</style>
+<style lang="scss" scoped>
+.dsds .van-tabs__line {
+  background-color:#000;
 }
 </style>
