@@ -223,7 +223,7 @@ export default {
   created() {
     this.userexpress();
     this.maplist = maps;
-    let yysd=JSON.parse(this.$store.state.addresslist);
+    // let yysd=JSON.parse(this.$store.state.addresslist);
     // console.log(isNaN(
     //     parseFloat(JSON.parse(this.$store.state.addresslist)[0].shippingCountryId)
     //   ),

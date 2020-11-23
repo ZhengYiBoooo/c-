@@ -269,16 +269,18 @@ export default {
                   };
                   var that = this;
                   userexpsuinfos2(obj).then((res) => {
-                    let yyy = ress.data.records.filter((item) => {
-                      return item.isDefault == 1;
-                    });
+                    
+                  console.log(res, "bbbb");
+                    let yyy = res.data;
+                    //   return item.isDefault == 1;
+                    // });
                     if (yyy == "") {
                       this.$store.commit(
                         "changeaddress",
                         JSON.stringify(res.data)
                       );
                     } else {
-                      that.$store.commit("changeaddress", JSON.stringify(yyy[0]));
+                      that.$store.commit("changeaddress", JSON.stringify(yyy));
                     }
                     if (res.code == 200) {
                       this.$router.push({
@@ -325,16 +327,17 @@ export default {
                   };
                   var that = this;
                   userexpsuinfos2(obj).then((res) => {
-                    let yyy = ress.data.records.filter((item) => {
-                      return item.isDefault == 1;
-                    });
+                  console.log(res, "bbbb");
+                    let yyy = res.data;
+                    //   return item.isDefault == 1;
+                    // });
                     if (yyy == "") {
                       that.$store.commit(
                         "changeaddress",
                         JSON.stringify(res.data)
                       );
                     } else {
-                      that.$store.commit("changeaddress", JSON.stringify(yyy[0]));
+                      that.$store.commit("changeaddress", JSON.stringify(yyy));
                     }
                     if (res.code == 200) {
                       this.$router.push({
